@@ -92,6 +92,7 @@
     <ClInclude Include="IResourceControl.h" />
     <ClInclude Include="object_translater.h" />
     <ClInclude Include="Position.h" />
+    <ClInclude Include="random_manager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_loader.h" />
     <ClInclude Include="resource_manager.h" />

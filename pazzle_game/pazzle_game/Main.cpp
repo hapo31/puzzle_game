@@ -5,6 +5,7 @@
 #include"draw_system.h"
 #include"coursor.h"
 #include"field.h"
+#include"random_manager.h"
 
 const int WindowWidth = 1280;
 const int WindowHeight = 720;
@@ -16,6 +17,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetUseASyncLoadFlag(TRUE);
 	res::resource::set_async(true);
 	Dx_Ready::get("puzzle");
+	auto rnd = util::random_manager::getInstance();
+	rnd->set_seed(std::random_device()());
 
 	////////
 	GameObject::field field(7, 7);

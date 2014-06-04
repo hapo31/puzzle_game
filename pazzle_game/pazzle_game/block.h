@@ -21,7 +21,7 @@ namespace GameObject
 		//線がある向き
 		int connect_dir_ = 0;
 		//ブロックが消えるまでのフレーム数
-		int erase_frame = 0xff;
+		int erase_frame = 0xffff;
 		BLOCK_TYPE mytype_ = BLANK;
 	public:
 		block();
@@ -60,7 +60,7 @@ namespace GameObject
 				if (mytype_ == BLOCK)
 					mytype_ = BLANK;
 				connect_dir_ = 0;
-				erase_frame = 0xff;
+				erase_frame = 0xffff;
 				return true;
 			}
 			else

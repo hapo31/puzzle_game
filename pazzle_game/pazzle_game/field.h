@@ -45,8 +45,13 @@ namespace GameObject
 		
 		void block_swap(int ax, int ay, int bx, int by);
 		
-		//空いたところにブロックを生成する
-		int create_block();
+		//ブロックを生成する
+		inline block create_block();
+		//向きの数(2 <= dirs <= 4)
+		inline block create_block(int dirs);
+
+		//BLANKな箇所を埋める
+		int fall_blocks();
 
 		//ブロック消去
 		int block_erase();

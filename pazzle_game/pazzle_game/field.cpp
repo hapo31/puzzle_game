@@ -1,16 +1,17 @@
 #include<random>
 #include"field.h"
 #include"draw_system.h"
+#include"random_manager.h"
 
 using namespace GameObject;
 using namespace util;
 
+auto rnd = util::random_manager::getInstance();
 
 field::field(int x, int y) : field_size_(x + 2, y + 2), data_((x + 4) * (y + 4)), flags_((x + 4) * (y + 4))
 , connectnum((x + 4) * (y + 4))
 {}
 
-//std::random_deviceはあとでstd::mt19937に差し替える
 void field::initialize()
 {
 	for (int i = 0; i < field_size_.y; ++i)
@@ -26,31 +27,59 @@ void field::initialize()
 			}
 			else
 			{
-				///*フィールド生成(乱数モード)
-				int lines [] = { RIGHT, UP, LEFT, DOWN };
-				int rnd = std::random_device()() % 4;
-				// 1/100の確率でT字を出す
-				if (std::random_device()() % 50 == 0)
+				// 1/50の確率でT字を出す
+				if (::rnd->get_rand() % 50 == 0)
 				{
-					data_[corrent].set_connect_dir( ( ~lines[rnd] ) & 31 );
+					data_[corrent] = create_block(3);
 				}
 				else
 				{
-					int max = std::random_device()() % 3;
-					int rnd2 = (rnd + max) % 4;
-					rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
-					int line = lines[rnd] | lines[rnd2];
-					data_[corrent].set_connect_dir(line);
+					data_[corrent] = create_block();
 				}
 				data_[corrent].set_eraseframe(erase_frame);
-				//*/
-				/*固定モード（全部十字）
-				data_[i * field_size_.x + j].set_connect_dir(31);
-				//*/
 			}
 
 		}
 	}
+}
+
+block field::create_block()
+{
+	int lines [] = { RIGHT, UP, LEFT, DOWN };
+	int rnd = ::rnd->get_rand() % 4;
+	int max = ::rnd->get_rand() % 3;
+	int rnd2 = (rnd + max) % 4;
+	rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
+	int line = lines[rnd] | lines[rnd2];
+	return block(line);
+}
+
+block field::create_block(int dirs)
+{
+	int line = 0;
+
+	switch (dirs)
+	{
+	case 0:
+	case 1:
+		throw std::runtime_error("dirs too small");
+	case 2:
+		return create_block();
+	case 3:
+	{
+		int lines [] = { RIGHT, UP, LEFT, DOWN };
+		int rnd = ::rnd->get_rand() % 4;
+		line = (~lines[rnd]);
+	}
+		break;
+	case 4:
+		line = 31;
+		break;
+	default:
+		throw std::runtime_error("dirs too big");
+	}
+
+	return block(line);
 }
 
 std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
