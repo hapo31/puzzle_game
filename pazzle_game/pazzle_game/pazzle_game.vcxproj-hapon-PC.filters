@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{f2b8d03b-5a33-4423-872d-c64da4d2f0d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object\source">
+      <UniqueIdentifier>{c4d3b1e6-2478-44b2-bff7-93e8ccf64fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object\header">
+      <UniqueIdentifier>{22a177c6-b436-4e2f-a775-907bce536c09}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="block.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DxLibControl.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDevice.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="field.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>object\source</Filter>
+    </ClCompile>
+    <ClCompile Include="field.cpp">
+      <Filter>object\source</Filter>
+    </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>object\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

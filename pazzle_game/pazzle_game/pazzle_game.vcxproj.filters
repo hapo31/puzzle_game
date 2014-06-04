@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{f2b8d03b-5a33-4423-872d-c64da4d2f0d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object\source">
+      <UniqueIdentifier>{c4d3b1e6-2478-44b2-bff7-93e8ccf64fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object\header">
+      <UniqueIdentifier>{22a177c6-b436-4e2f-a775-907bce536c09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw">
+      <UniqueIdentifier>{b6fafb01-ca38-4499-959c-3f7726eaf879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw\header">
+      <UniqueIdentifier>{a3937219-d367-45a3-ae11-2f3e3d5cde55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw\source">
+      <UniqueIdentifier>{25de32b0-147e-44b8-97d8-95cda3b28f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utility">
+      <UniqueIdentifier>{8927be12-6209-4e0d-83ac-0455bd170374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utility\header">
+      <UniqueIdentifier>{ed4f74ed-c517-453f-8746-b243dc9ba22d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utility\source">
+      <UniqueIdentifier>{9cf8c630-4e8f-4b37-99f4-8e00996c5d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{6b1978d9-df82-4c49-a35f-e43ea8547904}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\header">
+      <UniqueIdentifier>{18552fa5-7f59-439d-b61d-a2c0fe63c5fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\source">
+      <UniqueIdentifier>{921c42e2-8079-42dc-978b-a7a71ce875c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic">
+      <UniqueIdentifier>{b52ff0dd-f14e-4f42-a565-1eb836eecca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\header">
+      <UniqueIdentifier>{d266f352-a849-4ba1-8c10-00a5c5b4295c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\source">
+      <UniqueIdentifier>{36bed6b4-1351-4738-a623-7bd10e380121}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="block.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="DxLibControl.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDevice.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="field.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Position.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource\header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_loader.h">
+      <Filter>Resource\header</Filter>
+    </ClInclude>
+    <ClInclude Include="IResourceControl.h">
+      <Filter>Resource\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Logic\header</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_system.h">
+      <Filter>draw\header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_manager.h">
+      <Filter>Resource\header</Filter>
+    </ClInclude>
+    <ClInclude Include="coursor.h">
+      <Filter>object\header</Filter>
+    </ClInclude>
+    <ClInclude Include="object_translater.h">
+      <Filter>Logic\header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="field.cpp">
+      <Filter>object\source</Filter>
+    </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>object\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="resource.cpp">
+      <Filter>Resource\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Logic\source</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_game.cpp">
+      <Filter>draw\source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_mng.cpp">
+      <Filter>Resource\source</Filter>
+    </ClCompile>
+    <ClCompile Include="cursor.cpp">
+      <Filter>object\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
