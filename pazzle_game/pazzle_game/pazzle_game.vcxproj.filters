@@ -91,10 +91,10 @@
     <ClInclude Include="coursor.h">
       <Filter>object\header</Filter>
     </ClInclude>
-    <ClInclude Include="object_translater.h">
-      <Filter>Logic\header</Filter>
-    </ClInclude>
     <ClInclude Include="random_manager.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="object_translater.h">
       <Filter>utility\header</Filter>
     </ClInclude>
   </ItemGroup>

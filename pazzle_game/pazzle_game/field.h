@@ -32,7 +32,8 @@ namespace GameObject
 
 		//ブロックが消えるまでのフレーム数
 		int erase_frame = 150;
-
+		//ブロックの整列　再帰処理用
+		int fall_block(int x, int y);
 	public:
 		//その位置のブロックが何個つながっているか
 		std::vector<int> connectnum;

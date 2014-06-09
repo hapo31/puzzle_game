@@ -82,6 +82,41 @@ block field::create_block(int dirs)
 	return block(line);
 }
 
+int field::fall_blocks()
+{
+	//‰º‚©‚çã‚ÉŒü‚©‚Á‚Ä‰¡‚É‚¸‚ç‚µ‚È‚ª‚çŒ©‚é
+	for (int j = 1; j < field_size_.x - 1; ++j)
+	{
+		for (int i = field_size_.y - 2; i >= 0; --i)
+		{
+			if (data_[i * field_size_.x + j].get_block_type() == BLANK)
+			{
+				fall_block(j , i);
+			}
+		}
+	}
+	return 0;
+}
+
+int field::fall_block(int x, int y)
+{
+	flags_[y * field_size_.x + x] = NOP;
+	if (y < 1)
+		return 1;
+	else
+	{
+		if (data_[(y - 1) * field_size_.x + x].get_block_type() == BLOCK)
+		{
+			data_[y * field_size_.x + x] = std::move( data_[(y - 1) * field_size_.x + x]);
+			return 1 + fall_block(x, y - 1);
+		}
+		else
+		{
+			return fall_block( x, y - 1 );
+		}
+	}
+}
+
 std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 {
 	//flags‰Šú‰»
@@ -291,6 +326,7 @@ void field::block_update()
 						data_[i].erase();
 					else
 						flags_[i] = NOP;
+					fall_blocks();
 				}
 				break;
 			}
