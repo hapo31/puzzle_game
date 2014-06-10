@@ -97,6 +97,9 @@
     <ClInclude Include="object_translater.h">
       <Filter>utility\header</Filter>
     </ClInclude>
+    <ClInclude Include="fixed_point.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="field.cpp">

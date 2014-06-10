@@ -1,13 +1,20 @@
 #pragma once
 #include<vector>
+#include"Position.h"
 
-namespace logic
+namespace util
 {
-	class block_translater
+	class object_translater
 	{
 		int frame = 0;
-		float x, y;
+		util::pos<int> target;
+		util::pos<int> now;
 	public:
-		block_translater();
+		object_translater() = default;
+		template<class TransLate_Engine>
+		bool next(TransLate_Engine& engine, pos<int>& object_pos)
+		{
+			engine();
+		}
 	};
 }

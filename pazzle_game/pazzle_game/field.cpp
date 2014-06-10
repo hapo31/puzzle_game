@@ -91,7 +91,7 @@ int field::fall_blocks()
 		{
 			if (data_[i * field_size_.x + j].get_block_type() == BLANK)
 			{
-				fall_block(j , i);
+				i = fall_block(j , i);
 			}
 		}
 	}
@@ -172,6 +172,7 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 
 	block_update();
 
+	fall_blocks();
 	return flags_;
 }
 
@@ -326,7 +327,6 @@ void field::block_update()
 						data_[i].erase();
 					else
 						flags_[i] = NOP;
-					fall_blocks();
 				}
 				break;
 			}
