@@ -6,6 +6,7 @@
 .project
 .metadata
 *.exe
+Log.txt
 bin/
 tmp/
 *.tmp
