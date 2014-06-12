@@ -44,12 +44,15 @@ namespace GameObject
 		field(int sizex, int sizey);
 		void initialize();
 		
+		//aとbを入れ替える
 		void block_swap(int ax, int ay, int bx, int by);
-		
-		//ブロックを生成する
-		inline block create_block();
-		//向きの数(2 <= dirs <= 4)
-		inline block create_block(int dirs);
+		void block_swap(const util::pos<int>& a, const util::pos<int>& b){ block_swap(a.x, a.y, b.x, b.y); }
+
+		//ブロックを生成する 3方向と4方向の生成確率を指定できる
+		inline block block_new(int ThreeLineProb, int FourlineProb);
+
+		//1列ずつブロックを生成する 生成できない(フィールドが埋まっている)場合は0を返す
+		inline int create_blocks();
 
 		//BLANKな箇所を埋める
 		int fall_blocks();

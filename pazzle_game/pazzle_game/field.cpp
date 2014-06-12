@@ -28,14 +28,7 @@ void field::initialize()
 			else
 			{
 				// 1/50の確率でT字を出す
-				if (::rnd->get_rand() % 50 == 0)
-				{
-					data_[corrent] = create_block(3);
-				}
-				else
-				{
-					data_[corrent] = create_block();
-				}
+				data_[corrent] = block_new(50, 0);
 				data_[corrent].set_eraseframe(erase_frame);
 			}
 
@@ -43,7 +36,8 @@ void field::initialize()
 	}
 }
 
-block field::create_block()
+/*
+block field::block_new()
 {
 	int lines [] = { RIGHT, UP, LEFT, DOWN };
 	int rnd = ::rnd->get_rand() % 4;
@@ -54,7 +48,7 @@ block field::create_block()
 	return block(line);
 }
 
-block field::create_block(int dirs)
+block field::block_new(int dirs)
 {
 	int line = 0;
 
@@ -64,7 +58,7 @@ block field::create_block(int dirs)
 	case 1:
 		throw std::runtime_error("dirs too small");
 	case 2:
-		return create_block();
+		return block_new();
 	case 3:
 	{
 		int lines [] = { RIGHT, UP, LEFT, DOWN };
@@ -80,6 +74,45 @@ block field::create_block(int dirs)
 	}
 
 	return block(line);
+}
+*/
+
+//確率指定でブロック生成
+block field::block_new(int ThreeLineProb, int FourlineProb)
+{
+	int lines[] = { RIGHT, UP, LEFT, DOWN };
+	int rnd = ::rnd->get_rand() % 4;
+	int line = 0;
+	int prob = ::rnd->get_rand();
+	if (prob % FourlineProb == 0)
+	{
+		line = (UP | RIGHT | DOWN | LEFT);
+	}
+	else if (prob % ThreeLineProb == 0)
+	{
+		line = ~lines[rnd];
+	}
+	else
+	{
+		int max = ::rnd->get_rand() % 3;
+		int rnd2 = (rnd + max) % 4;
+		rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
+		line = lines[rnd] | lines[rnd2];
+	}
+
+	return block(line);
+}
+
+int field::create_blocks()
+{
+	int n = 0;
+	for (int i = 1; i < field_size_.x - 1; ++i)
+	{
+		if (data_[field_size_.x + i].get_block_type() == BLANK)
+		{
+			data_[field_size_.x + i] = block_new(50, 0);
+		}
+	}
 }
 
 int field::fall_blocks()
@@ -116,6 +149,8 @@ int field::fall_block(int x, int y)
 		}
 	}
 }
+
+
 
 std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 {

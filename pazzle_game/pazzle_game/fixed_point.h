@@ -3,28 +3,28 @@
 
 namespace util
 {
-
-
-	void f()
+	template<int Base, int Index>
+	struct TMP_Pow
 	{
-		int i = pow<5, 4>::value;
-	}
+		enum { value = Base * TMP_Pow<Base, Index - 1>::value };
+	};
+	
+	template<int Base>
+	struct TMP_Pow<Base, 0>
+	{
+		enum{ value = 1 };
+	};
 
-	template<class Dec_Type, int real_width = 20>
+	template<class Dec_Type, int real_width = 16>
 	class basic_fixed_point
 	{
-		Dec_Type data;
+		Dec_Type num;
 	public:
-		enum { point_width = std::numeric_limits<Dec_Type>::digits };
-		template<class lvalue_Type, class rvalue_Type>
-		decltype(*this) operator=()
-		{
-			return 
-		}
+		enum { point_width = std::numeric_limits<Dec_Type>::digits }
 		template<class lvalue_Type>
-		lvalue_Type operator=() const
+		lvarue_Type operator=() const
 		{
-			return data /  
+			return  num / TMP_Pow<10, point_width>::value;
 		}
 	};
 
