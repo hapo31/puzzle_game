@@ -25,10 +25,10 @@ void field::initialize()
 			{
 				data_[corrent] = WALL;
 			}
-			else
+			else if (false)
 			{
 				// 1/50の確率でT字を出す
-				data_[corrent] = block_new(50, 0);
+				data_[corrent] = block_new(50, 5);
 				data_[corrent].set_eraseframe(erase_frame);
 			}
 
@@ -78,17 +78,17 @@ block field::block_new(int dirs)
 */
 
 //確率指定でブロック生成
-block field::block_new(int ThreeLineProb, int FourlineProb)
+block field::block_new(int ThreeLineProb, int FourLineProb)
 {
 	int lines[] = { RIGHT, UP, LEFT, DOWN };
 	int rnd = ::rnd->get_rand() % 4;
 	int line = 0;
 	int prob = ::rnd->get_rand();
-	if (prob % FourlineProb == 0)
+	if (FourLineProb > 0 && prob % FourLineProb == 0)
 	{
 		line = (UP | RIGHT | DOWN | LEFT);
 	}
-	else if (prob % ThreeLineProb == 0)
+	else if (ThreeLineProb > 0 && prob % ThreeLineProb == 0)
 	{
 		line = ~lines[rnd];
 	}
@@ -99,10 +99,19 @@ block field::block_new(int ThreeLineProb, int FourlineProb)
 		rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
 		line = lines[rnd] | lines[rnd2];
 	}
-
-	return block(line);
+	block b(line);
+	b.set_eraseframe(erase_frame);
+	return b;
 }
 
+//向き指定でブロック生成
+block field::block_new(int dir)
+{
+	block b(dir);
+	b.set_eraseframe(erase_frame);
+	return b;
+}
+//空いている最上段にブロック生成
 int field::create_blocks()
 {
 	int n = 0;
@@ -110,9 +119,12 @@ int field::create_blocks()
 	{
 		if (data_[field_size_.x + i].get_block_type() == BLANK)
 		{
-			data_[field_size_.x + i] = block_new(50, 0);
+			data_[field_size_.x + i] = block_new(50, 5);
+			flags_[field_size_.x + i] = NEW;
+			++n;
 		}
 	}
+	return n;
 }
 
 int field::fall_blocks()
@@ -122,9 +134,16 @@ int field::fall_blocks()
 	{
 		for (int i = field_size_.y - 2; i >= 0; --i)
 		{
+
 			if (data_[i * field_size_.x + j].get_block_type() == BLANK)
 			{
 				i = fall_block(j , i);
+				
+				//生成したばかりのブロックなら、いきなり消えないように回転or変更(十字)する
+				if (data_[i * field_size_.x + j].get_block_type() == WALL)
+				{
+
+				}
 			}
 		}
 	}
@@ -138,9 +157,13 @@ int field::fall_block(int x, int y)
 		return 1;
 	else
 	{
+		//上がブロックならx,y位置のブロックと入れ替え
 		if (data_[(y - 1) * field_size_.x + x].get_block_type() == BLOCK)
 		{
 			data_[y * field_size_.x + x] = std::move( data_[(y - 1) * field_size_.x + x]);
+			auto t = flags_[y * field_size_.x + x];
+			flags_[y * field_size_.x + x] = flags_[(y - 1)  * field_size_.x + x];
+			flags_[(y - 1)  * field_size_.x + x] = t;
 			return 1 + fall_block(x, y - 1);
 		}
 		else
@@ -150,12 +173,10 @@ int field::fall_block(int x, int y)
 	}
 }
 
-
-
 std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 {
 	//flags初期化
-	for (auto& it : flags_) if (it != ERASING && it != ERASE) it = NOP;
+	for (auto& it : flags_) if (it != ERASING && it != ERASE && it != NEW) it = NOP;
 	for (auto& it : connectnum) it = 0;
 
 	for (int i = 0; i < field_size_.y; ++i)
@@ -204,12 +225,17 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 			}
 		}
 	}
-
-	block_update();
-
-	fall_blocks();
 	return flags_;
 }
+
+void field::update()
+{
+	block_erase_check();
+	block_update();
+	create_blocks();
+	fall_blocks();
+}
+
 
 //ブロックチェックの実装部
 int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
@@ -236,7 +262,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 			return 0;
 		}
 	}
-	if (flags_[corrent] == TMP || data_[corrent] == BLANK)
+	if (flags_[corrent] == TMP || flags_[corrent] == NEW || data_[corrent] == BLANK)
 	{
 		return 0;
 	}
@@ -348,8 +374,8 @@ void field::block_update()
 			//flagsをチェック
 			switch (flags_[i])
 			{
-			case ERASE:
-				flags_[i] = ERASING;
+			case NEW:
+				flags_[i] = NOP;
 				/* FALL THROUGH */
 			case NOP:
 			case WALLCONNECT:

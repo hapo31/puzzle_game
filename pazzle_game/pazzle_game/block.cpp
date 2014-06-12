@@ -2,11 +2,6 @@
 
 using namespace GameObject;
 
-block::block() : connect_dir_(0), mytype_(BLOCK)
-{
-
-}
-
 void block::rota(int dir)
 {
 	if (dir == 0)

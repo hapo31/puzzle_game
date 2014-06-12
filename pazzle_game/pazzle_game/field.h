@@ -14,7 +14,8 @@ namespace GameObject
 			TMP,		//消すかもしれない
 			ERASE,		//消すのが確定
 			ERASING,	//消去中
-			WALLCONNECT	//壁と接続している 
+			WALLCONNECT,//壁と接続している 
+			NEW,		//今出来たブロック
 		};
 	private:
 		//ブロックデータ
@@ -33,24 +34,15 @@ namespace GameObject
 		//ブロックが消えるまでのフレーム数
 		int erase_frame = 150;
 		//ブロックの整列　再帰処理用
-		int fall_block(int x, int y);
-	public:
-		//その位置のブロックが何個つながっているか
-		std::vector<int> connectnum;
-
-		using block_iterator = std::vector<block>::iterator;
-		using flags_iterator = std::vector<ERASE_CHK>::iterator;
-
-		field(int sizex, int sizey);
-		void initialize();
-		
+		int fall_block(int x, int y);		
 		//aとbを入れ替える
 		void block_swap(int ax, int ay, int bx, int by);
 		void block_swap(const util::pos<int>& a, const util::pos<int>& b){ block_swap(a.x, a.y, b.x, b.y); }
 
 		//ブロックを生成する 3方向と4方向の生成確率を指定できる
 		inline block block_new(int ThreeLineProb, int FourlineProb);
-
+		//向き指定でブロックを生成する
+		inline block block_new(int dir);
 		//1列ずつブロックを生成する 生成できない(フィールドが埋まっている)場合は0を返す
 		inline int create_blocks();
 
@@ -63,6 +55,19 @@ namespace GameObject
 		void block_update();
 		//ブロックの接続チェック
 		std::vector<ERASE_CHK> block_erase_check(bool erase_flag = true);
+
+	public:
+		//その位置のブロックが何個つながっているか
+		std::vector<int> connectnum;
+
+		using block_iterator = std::vector<block>::iterator;
+		using flags_iterator = std::vector<ERASE_CHK>::iterator;
+
+		field(int sizex, int sizey);
+		void initialize();
+
+		//フィールドのアップデート
+		void update();
 
 		decltype(field_size_) get_size() const { return field_size_; }
 		block& get_block(int x, int y) { return data_[ y * field_size_.x + x ]; }

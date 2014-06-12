@@ -84,7 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		g.draw_coursor(5, 5, cursor);
 		g.draw_Flags(5, 5, field);
 		g.add_frame();
-		field.block_erase_check();
+		field.update();
 		ScreenFlip();
 		if (ProcessMessage() == -1)
 			return 1;

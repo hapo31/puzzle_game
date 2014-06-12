@@ -24,8 +24,8 @@ namespace GameObject
 		int erase_frame = 0xffff;
 		BLOCK_TYPE mytype_ = BLANK;
 	public:
-		block();
-		explicit block(int dir) : connect_dir_(dir), mytype_(BLOCK) {}
+		block() : connect_dir_(0), mytype_(BLANK) {};
+		explicit block(int dir) : connect_dir_(dir), mytype_(dir != 0 ? BLOCK : BLANK) {}
 		explicit block(BLOCK_TYPE type) : mytype_(type) {}
 		block(block&& object)
 		{
@@ -71,6 +71,6 @@ namespace GameObject
 		bool operator&(int dir) const { return (connect_dir_ & dir) != 0; }
 		BLOCK_TYPE get_block_type() const { return  mytype_; }
 		int get_connect_dir() const { return connect_dir_; }
-		void set_connect_dir(int dir){ connect_dir_ = dir; mytype_ = BLOCK; }
+		void set_connect_dir(int dir){ connect_dir_ = dir; mytype_ = dir != 0 ? BLOCK : BLANK; }
 	};
 }

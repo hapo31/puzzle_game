@@ -12,7 +12,7 @@ namespace util
 		bool operator==(const pos& rvl) const { return (this->x == rvl.x && this->y == rvl.y); }
 	};
 
-	
+	/*
 	template<>
 	struct pos<int>
 	{
@@ -25,5 +25,5 @@ namespace util
 		bool operator==(const pos& rvl) const { return pos_data == rvl.pos_data; }
 	
 	};
-	
+	*/
 }
