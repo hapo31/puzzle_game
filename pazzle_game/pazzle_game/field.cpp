@@ -25,11 +25,10 @@ void field::initialize()
 			{
 				data_[corrent] = WALL;
 			}
-			else if (false)
+			else
 			{
-				// 1/50の確率でT字を出す
-				data_[corrent] = block_new(50, 5);
-				data_[corrent].set_eraseframe(erase_frame);
+				// ブロックを初期化する
+				data_[corrent].erase();
 			}
 
 		}
@@ -77,6 +76,32 @@ block field::block_new(int dirs)
 }
 */
 
+//壁とそのブロックが繋がっているかどうか(壁はしブロック限定)
+bool field::is_connected(int x, int y) const
+{
+	int corrent = y * field_size_.x + x;
+	if (data_[corrent].get_block_type() == BLOCK)		
+	{
+		if (x == 1)
+		{
+			return data_[corrent] & LEFT;
+		}
+		else if (x == field_size_.x - 1)
+		{
+			return data_[corrent] & RIGHT;
+		}
+		else if (y == 1)
+		{
+			return data_[corrent] & UP;
+		}
+		else if (y == field_size_.y - 1)
+		{
+			return data_[corrent] & DOWN;
+		}
+	}
+	return false;
+}
+
 //確率指定でブロック生成
 block field::block_new(int ThreeLineProb, int FourLineProb)
 {
@@ -119,8 +144,7 @@ int field::create_blocks()
 	{
 		if (data_[field_size_.x + i].get_block_type() == BLANK)
 		{
-			data_[field_size_.x + i] = block_new(50, 5);
-			flags_[field_size_.x + i] = NEW;
+			data_[field_size_.x + i] = block_new(50, 0);
 			++n;
 		}
 	}
@@ -134,15 +158,22 @@ int field::fall_blocks()
 	{
 		for (int i = field_size_.y - 2; i >= 0; --i)
 		{
-
 			if (data_[i * field_size_.x + j].get_block_type() == BLANK)
 			{
 				i = fall_block(j , i);
-				
-				//生成したばかりのブロックなら、いきなり消えないように回転or変更(十字)する
-				if (data_[i * field_size_.x + j].get_block_type() == WALL)
+				if (i == 1 || i == field_size_.y - 1 || j == 1 || j == field_size_.x - 1)
 				{
-
+					//新しいブロックなら消えなくなるまで回す
+					if (data_[i * field_size_.x + j].is_new())
+					{
+						int n = 0;
+						//4回回してもダメだったらしょうがないので抜ける
+						while (n < 4 && is_connected(j, i))
+						{
+							++n;
+							data_[i * field_size_.x + j].rota(0);
+						}
+					}
 				}
 			}
 		}
@@ -176,7 +207,7 @@ int field::fall_block(int x, int y)
 std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 {
 	//flags初期化
-	for (auto& it : flags_) if (it != ERASING && it != ERASE && it != NEW) it = NOP;
+	for (auto& it : flags_) if (it != ERASING && it != ERASE) it = NOP;
 	for (auto& it : connectnum) it = 0;
 
 	for (int i = 0; i < field_size_.y; ++i)
@@ -229,11 +260,11 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 }
 
 void field::update()
-{
-	block_erase_check();
-	block_update();
+{	
 	create_blocks();
 	fall_blocks();
+	block_erase_check();
+	block_update();
 }
 
 
@@ -262,7 +293,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 			return 0;
 		}
 	}
-	if (flags_[corrent] == TMP || flags_[corrent] == NEW || data_[corrent] == BLANK)
+	if (flags_[corrent] == TMP || data_[corrent] == BLANK)
 	{
 		return 0;
 	}
@@ -371,16 +402,17 @@ void field::block_update()
 	{
 		if (data_[i].get_block_type() != BLANK)
 		{
+			data_[i].set_old();
 			//flagsをチェック
 			switch (flags_[i])
 			{
-			case NEW:
-				flags_[i] = NOP;
 				/* FALL THROUGH */
 			case NOP:
 			case WALLCONNECT:
 				data_[i].set_eraseframe(erase_frame);
 				break;
+			case ERASE:
+				flags_[i] = ERASING;
 			case ERASING:
 				if (!data_[i].decrement_eraseframe())
 				{

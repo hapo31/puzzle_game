@@ -15,7 +15,6 @@ namespace GameObject
 			ERASE,		//消すのが確定
 			ERASING,	//消去中
 			WALLCONNECT,//壁と接続している 
-			NEW,		//今出来たブロック
 		};
 	private:
 		//ブロックデータ
@@ -35,9 +34,6 @@ namespace GameObject
 		int erase_frame = 150;
 		//ブロックの整列　再帰処理用
 		int fall_block(int x, int y);		
-		//aとbを入れ替える
-		void block_swap(int ax, int ay, int bx, int by);
-		void block_swap(const util::pos<int>& a, const util::pos<int>& b){ block_swap(a.x, a.y, b.x, b.y); }
 
 		//ブロックを生成する 3方向と4方向の生成確率を指定できる
 		inline block block_new(int ThreeLineProb, int FourlineProb);
@@ -45,6 +41,10 @@ namespace GameObject
 		inline block block_new(int dir);
 		//1列ずつブロックを生成する 生成できない(フィールドが埋まっている)場合は0を返す
 		inline int create_blocks();
+
+		//ブロックが壁に繋がっているかどうかをチェックする
+		bool is_connected(const util::pos<int>& block_pos) const { return is_connected(block_pos.x, block_pos.y); };
+		bool is_connected(int ax, int ay) const;
 
 		//BLANKな箇所を埋める
 		int fall_blocks();
@@ -84,6 +84,10 @@ namespace GameObject
 			data_[y * field_size_.x + x] = std::move(object);
 			return true;
 		}
+
+		//aとbを入れ替える
+		void block_swap(int ax, int ay, int bx, int by);
+		void block_swap(const util::pos<int>& a, const util::pos<int>& b){ block_swap(a.x, a.y, b.x, b.y); }
 
 		int get_flag(int x, int y) const { return flags_ [ y * field_size_.x + x]; }
 		block_iterator block_iterator_begin() { return data_.begin(); }

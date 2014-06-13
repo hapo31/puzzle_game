@@ -23,6 +23,7 @@ namespace GameObject
 		//ブロックが消えるまでのフレーム数
 		int erase_frame = 0xffff;
 		BLOCK_TYPE mytype_ = BLANK;
+		bool is_new_ = true;
 	public:
 		block() : connect_dir_(0), mytype_(BLANK) {};
 		explicit block(int dir) : connect_dir_(dir), mytype_(dir != 0 ? BLOCK : BLANK) {}
@@ -39,6 +40,7 @@ namespace GameObject
 			if (type != BLOCK) mytype_ = type;
 			return *this;
 		}
+
 		block& operator=(block&& object)
 		{
 			mytype_ = object.mytype_;
@@ -46,10 +48,16 @@ namespace GameObject
 			object.mytype_ = BLANK;
 			object.connect_dir_ = 0;
 			erase_frame = object.erase_frame;
+			is_new_ = object.is_new_;
+
 			return *this;
 		}
 		void set_eraseframe(int value){ erase_frame = value; }
 		int get_eraseframe() const { return erase_frame; }
+		//このブロックが新しいかどうか
+		bool is_new() const { return is_new_; }
+		//このブロックのnewフラグを倒す
+		void set_old()  { is_new_ = false; }
 		//引いた結果が0以下の場合はfalse
 		bool decrement_eraseframe() { return (--erase_frame) >= 1; }
 		//ブロックを消す
