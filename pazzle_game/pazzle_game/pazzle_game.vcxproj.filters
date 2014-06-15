@@ -50,15 +50,21 @@
     <Filter Include="Logic\source">
       <UniqueIdentifier>{36bed6b4-1351-4738-a623-7bd10e380121}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Levels">
+      <UniqueIdentifier>{9f4ca16d-0e0f-40f7-9b31-3bd0ea3f68d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Levels\header">
+      <UniqueIdentifier>{0fe99239-fbca-4cce-9dc3-cf1bf9a9f23d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Levels\source">
+      <UniqueIdentifier>{f9790f58-55bc-404c-b82f-8a9de5828cdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Defs">
+      <UniqueIdentifier>{57f3e64d-e751-455b-9e4b-2eb7de8546b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h">
-      <Filter>object\header</Filter>
-    </ClInclude>
-    <ClInclude Include="DxLibControl.h">
-      <Filter>object\header</Filter>
-    </ClInclude>
-    <ClInclude Include="InputDevice.h">
       <Filter>object\header</Filter>
     </ClInclude>
     <ClInclude Include="field.h">
@@ -79,9 +85,6 @@
     <ClInclude Include="IResourceControl.h">
       <Filter>Resource\header</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Logic\header</Filter>
-    </ClInclude>
     <ClInclude Include="draw_system.h">
       <Filter>draw\header</Filter>
     </ClInclude>
@@ -100,6 +103,30 @@
     <ClInclude Include="fixed_point.h">
       <Filter>utility\header</Filter>
     </ClInclude>
+    <ClInclude Include="DxLibControl.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Controler_Manager.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDevice.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Title.h">
+      <Filter>Levels\header</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMain.h">
+      <Filter>Levels\header</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowSize.h">
+      <Filter>Defs</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Levels\header</Filter>
+    </ClInclude>
+    <ClInclude Include="Level_Manager.h">
+      <Filter>Levels\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="field.cpp">
@@ -112,9 +139,6 @@
     <ClCompile Include="resource.cpp">
       <Filter>Resource\source</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Logic\source</Filter>
-    </ClCompile>
     <ClCompile Include="draw_game.cpp">
       <Filter>draw\source</Filter>
     </ClCompile>
@@ -123,6 +147,12 @@
     </ClCompile>
     <ClCompile Include="cursor.cpp">
       <Filter>object\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Title.cpp">
+      <Filter>Levels\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Level_Manager.cpp">
+      <Filter>Levels\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

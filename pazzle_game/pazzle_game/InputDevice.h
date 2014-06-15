@@ -11,7 +11,7 @@
 			(例: enum Key{ DOWN, LEFT, RIGHT, UP, B1, B2... }という列挙体を定義する（要素名は自由）)
 	静的多態での対応なので、キーを毎フレーム画面出力する機能をつけたり、リプレイを読み込んで入力したりなどが自由にできる
 */
-
+/*
 namespace input
 {
 	template<class Control_T = DxLibControl>
@@ -36,7 +36,7 @@ namespace input
 		Controler_Manager(const Controler_Manager&) = delete;
 		Controler_Manager& operator=(const Controler_Manager&) = delete;
 	public:
-		static Controler_Manager* getInstance()
+		static Controler_Manager* get_Instance()
 		{
 			static Controler_Manager obj;
 			return &obj;
@@ -45,3 +45,4 @@ namespace input
 	};
 
 }
+*/

@@ -76,6 +76,10 @@ namespace res
 				return false;
 			}
 		}
-		static void set_async(bool value){ async_flag_ = value; }
+		static void set_async(bool value)
+		{
+			async_flag_ = value;
+			SetUseASyncLoadFlag(value);
+		}
 	};
 }

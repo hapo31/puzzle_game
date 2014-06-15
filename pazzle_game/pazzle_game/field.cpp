@@ -18,7 +18,7 @@ void field::initialize()
 	{
 		for (int j = 0; j < field_size_.x; ++j)
 		{
-			int corrent = i * field_size_.x + j;
+			int corrent = get_memorypos(j, i);
 			flags_[corrent] = NOP;
 			//壁の生成
 			if (i == 0 || i == field_size_.y - 1 || j == 0 || j == field_size_.x - 1)
@@ -33,53 +33,23 @@ void field::initialize()
 
 		}
 	}
-}
-
-/*
-block field::block_new()
-{
-	int lines [] = { RIGHT, UP, LEFT, DOWN };
-	int rnd = ::rnd->get_rand() % 4;
-	int max = ::rnd->get_rand() % 3;
-	int rnd2 = (rnd + max) % 4;
-	rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
-	int line = lines[rnd] | lines[rnd2];
-	return block(line);
-}
-
-block field::block_new(int dirs)
-{
-	int line = 0;
-
-	switch (dirs)
+	create_num = 1;
+	while (create_num != 0)
 	{
-	case 0:
-	case 1:
-		throw std::runtime_error("dirs too small");
-	case 2:
-		return block_new();
-	case 3:
-	{
-		int lines [] = { RIGHT, UP, LEFT, DOWN };
-		int rnd = ::rnd->get_rand() % 4;
-		line = (~lines[rnd]);
+		create_blocks();
+		block_update();
 	}
-		break;
-	case 4:
-		line = 31;
-		break;
-	default:
-		throw std::runtime_error("dirs too big");
-	}
-
-	return block(line);
+	//以下の4つは、開幕消えるのを防止するために出現ブロックを固定する
+	data_[get_memorypos(field_size_.x / 2, 1)].set_connect_dir(DOWN | RIGHT);
+	data_[get_memorypos(field_size_.x / 2, field_size_.y - 2)].set_connect_dir(UP | LEFT);
+	data_[get_memorypos(1, field_size_.y / 2)].set_connect_dir(DOWN | RIGHT);
+	data_[get_memorypos(field_size_.x - 2, field_size_.y / 2)].set_connect_dir(DOWN | LEFT);
 }
-*/
 
 //壁とそのブロックが繋がっているかどうか(壁はしブロック限定)
 bool field::is_connected(int x, int y) const
 {
-	int corrent = y * field_size_.x + x;
+	int corrent = get_memorypos(x, y);
 	if (data_[corrent].get_block_type() == BLOCK)		
 	{
 		if (x == 1)
@@ -102,104 +72,63 @@ bool field::is_connected(int x, int y) const
 	return false;
 }
 
-//確率指定でブロック生成
-block field::block_new(int ThreeLineProb, int FourLineProb)
-{
-	int lines[] = { RIGHT, UP, LEFT, DOWN };
-	int rnd = ::rnd->get_rand() % 4;
-	int line = 0;
-	int prob = ::rnd->get_rand();
-	if (FourLineProb > 0 && prob % FourLineProb == 0)
-	{
-		line = (UP | RIGHT | DOWN | LEFT);
-	}
-	else if (ThreeLineProb > 0 && prob % ThreeLineProb == 0)
-	{
-		line = ~lines[rnd];
-	}
-	else
-	{
-		int max = ::rnd->get_rand() % 3;
-		int rnd2 = (rnd + max) % 4;
-		rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
-		line = lines[rnd] | lines[rnd2];
-	}
-	block b(line);
-	b.set_eraseframe(erase_frame);
-	return b;
-}
 
-//向き指定でブロック生成
-block field::block_new(int dir)
-{
-	block b(dir);
-	b.set_eraseframe(erase_frame);
-	return b;
-}
 //空いている最上段にブロック生成
 int field::create_blocks()
 {
 	int n = 0;
 	for (int i = 1; i < field_size_.x - 1; ++i)
 	{
-		if (data_[field_size_.x + i].get_block_type() == BLANK)
+		if (data_[get_memorypos(i, 1)].get_block_type() == BLANK)
 		{
-			data_[field_size_.x + i] = block_new(50, 0);
+			++create_num;
+			data_[get_memorypos(i, 1)] = block::block_new(50, 0);
+			data_[get_memorypos(i, 1)].set_eraseframe(erase_frame);
+			flags_[get_memorypos(i, i)] = NOP;
 			++n;
 		}
 	}
 	return n;
 }
 
-int field::fall_blocks()
+int field::fall_blocks(int x)
 {
-	//下から上に向かって横にずらしながら見る
-	for (int j = 1; j < field_size_.x - 1; ++j)
+	int result = 0, tmp;
+	//下から上に向かって見る
+	for (int i = field_size_.y - 2; i >= 0; --i)
 	{
-		for (int i = field_size_.y - 2; i >= 0; --i)
+		if (data_[get_memorypos(x, i)].get_block_type() == BLANK)
 		{
-			if (data_[i * field_size_.x + j].get_block_type() == BLANK)
+			if (result < (tmp = fall_block(x, i)))
 			{
-				i = fall_block(j , i);
-				if (i == 1 || i == field_size_.y - 1 || j == 1 || j == field_size_.x - 1)
-				{
-					//新しいブロックなら消えなくなるまで回す
-					if (data_[i * field_size_.x + j].is_new())
-					{
-						int n = 0;
-						//4回回してもダメだったらしょうがないので抜ける
-						while (n < 4 && is_connected(j, i))
-						{
-							++n;
-							data_[i * field_size_.x + j].rota(0);
-						}
-					}
-				}
+				result = tmp;
 			}
 		}
 	}
-	return 0;
+	
+	return result;
 }
 
-int field::fall_block(int x, int y)
+int field::fall_block(int x, int y, int n)
 {
-	flags_[y * field_size_.x + x] = NOP;
+	flags_[get_memorypos(x, y)] = NOP;
 	if (y < 1)
-		return 1;
+	{
+		data_[get_memorypos(x, y)].set_old();
+		return n;
+	}
 	else
 	{
 		//上がブロックならx,y位置のブロックと入れ替え
-		if (data_[(y - 1) * field_size_.x + x].get_block_type() == BLOCK)
+		if (data_[get_memorypos(x, y - 1)].get_block_type() == BLOCK)
 		{
-			data_[y * field_size_.x + x] = std::move( data_[(y - 1) * field_size_.x + x]);
-			auto t = flags_[y * field_size_.x + x];
-			flags_[y * field_size_.x + x] = flags_[(y - 1)  * field_size_.x + x];
-			flags_[(y - 1)  * field_size_.x + x] = t;
-			return 1 + fall_block(x, y - 1);
+			data_[get_memorypos(x, y)] = std::move( data_[get_memorypos(x, y - 1)]);
+			flags_[get_memorypos(x, y)] = NOP;
+			return fall_block(x, y - 1, n + 1);
 		}
 		else
 		{
-			return fall_block( x, y - 1 );
+			return fall_block( x, y - 1 , n);
 		}
 	}
 }
@@ -214,7 +143,7 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 	{
 		for (int j = 0; j < field_size_.x; ++j)
 		{
-			int corrent = i * field_size_.x + j;
+			int corrent = get_memorypos(j, i);
 			//壁から調べる
 			if (data_[corrent].get_block_type() == WALL)
 			{
@@ -225,6 +154,9 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 				auto flag_tmp = flags_[corrent];
 				if (down < (int) data_.size() && (data_[down] & UP))
 				{
+					//新ブロックなら繋がらなくなるまで回す
+				
+					while (data_[down].is_new() && data_[down] & UP) data_[down].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j, i + 1, corrent)) != 0)
 						flags_[corrent] = ERASE;
 					else
@@ -232,6 +164,7 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 				}
 				if (right < (int) data_.size() &&  (data_[right] & LEFT))
 				{
+					while (data_[right].is_new() && data_[right] & LEFT) data_[right].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j + 1, i, corrent)) != 0)
 						flags_[corrent] = ERASE;
 					else
@@ -239,6 +172,7 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 				}
 				if (left >= 0 && (data_[left] & RIGHT))
 				{
+					while (data_[left].is_new() && data_[left] & RIGHT) data_[left].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j - 1, i, corrent)) != 0)
 						flags_[corrent] = ERASE;
 					else
@@ -246,6 +180,7 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 				}
 				if (up >= 0 &&  (data_[up] & DOWN))
 				{
+					while (data_[up].is_new() && data_[up] & DOWN) data_[up].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j, i - 1, corrent)) != 0)
 						flags_[corrent] = ERASE;
 					else
@@ -262,7 +197,6 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 void field::update()
 {	
 	create_blocks();
-	fall_blocks();
 	block_erase_check();
 	block_update();
 }
@@ -271,7 +205,7 @@ void field::update()
 //ブロックチェックの実装部
 int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 {
-	int corrent = y * field_size_.x + x;
+	int corrent = get_memorypos(x, y);
 	int t = 0;
 	//消す場合はtrue
 	bool this_erase = false;
@@ -293,7 +227,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 			return 0;
 		}
 	}
-	if (flags_[corrent] == TMP || data_[corrent] == BLANK)
+	if ( data_[corrent].is_new() || flags_[corrent] == TMP || data_[corrent] == BLANK)
 	{
 		return 0;
 	}
@@ -397,12 +331,19 @@ void field::block_swap(int ax, int ay, int bx, int by)
 
 //ブロックの状態更新
 void field::block_update()
-{
+{	
+	bool no_create = create_num == 0;
+	//下に隙間がなくなるように落とす
+	for (int i = 0; i < field_size_.x; ++i)
+	{
+		fall_blocks(i);
+	}
 	for (int i = 0; i < (int)data_.size(); ++i)
 	{
 		if (data_[i].get_block_type() != BLANK)
 		{
-			data_[i].set_old();
+			if (no_create)
+				data_[i].set_old();
 			//flagsをチェック
 			switch (flags_[i])
 			{
@@ -418,8 +359,7 @@ void field::block_update()
 				{
 					if (data_[i].get_block_type() != WALL)
 						data_[i].erase();
-					else
-						flags_[i] = NOP;
+					flags_[i] = NOP;
 				}
 				break;
 			}
@@ -429,4 +369,5 @@ void field::block_update()
 			flags_[i] = NOP;
 		}
 	}
+	create_num = 0;
 }

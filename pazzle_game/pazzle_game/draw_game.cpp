@@ -102,6 +102,10 @@ void draw_game::draw_Flags(int x, int y, const field& object) const
 				str = "No";
 				break;
 			}
+			if (object.get_block_const(j, i).is_new())
+			{
+				str = "Nw";
+			}
 			DrawString(3 + x + j * (block_size + frame_tickness), y + i * (block_size + frame_tickness), str.c_str(), color);
 			DrawFormatString(3 + x + j * (block_size + frame_tickness), 20 + y + i * (block_size + frame_tickness), GetColor(255, 255, 255), "%d", object.connectnum[i * field_size.x + j]);
 			DrawFormatString(3 + x + j * (block_size + frame_tickness), 40 + y + i * (block_size + frame_tickness), GetColor(255, 255, 255), "%d", object.get_block_const(j, i).get_eraseframe());

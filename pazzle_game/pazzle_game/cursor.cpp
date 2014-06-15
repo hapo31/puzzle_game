@@ -2,7 +2,7 @@
 
 using namespace GameObject;
 
-auto input_dev = input::Controler_Manager<input::Controler<input::DxLibControl>>::getInstance();
+//auto input_dev = input::Controler_Manager<input::Controler<input::DxLibControl>>::get_Instance();
 
 cursor::cursor(field* target) : target_(target),
 pos(target->get_size().x / 2, target->get_size().y / 2),

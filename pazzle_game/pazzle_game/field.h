@@ -22,6 +22,9 @@ namespace GameObject
 		//ブロックに付けられたフラグ
 		std::vector<ERASE_CHK> flags_;
 		util::pos<int> field_size_;
+		
+		//そのフレームで生成されたブロックの数
+		int create_num = 0;
 
 		enum{ erase_min = 1 };
 
@@ -33,12 +36,8 @@ namespace GameObject
 		//ブロックが消えるまでのフレーム数
 		int erase_frame = 150;
 		//ブロックの整列　再帰処理用
-		int fall_block(int x, int y);		
+		int fall_block(int x, int y, int n = 0);		
 
-		//ブロックを生成する 3方向と4方向の生成確率を指定できる
-		inline block block_new(int ThreeLineProb, int FourlineProb);
-		//向き指定でブロックを生成する
-		inline block block_new(int dir);
 		//1列ずつブロックを生成する 生成できない(フィールドが埋まっている)場合は0を返す
 		inline int create_blocks();
 
@@ -46,8 +45,8 @@ namespace GameObject
 		bool is_connected(const util::pos<int>& block_pos) const { return is_connected(block_pos.x, block_pos.y); };
 		bool is_connected(int ax, int ay) const;
 
-		//BLANKな箇所を埋める
-		int fall_blocks();
+		//指定列のブロックを重力にしたがって落とす
+		int fall_blocks(int x);
 
 		//ブロック消去
 		int block_erase();
@@ -55,6 +54,9 @@ namespace GameObject
 		void block_update();
 		//ブロックの接続チェック
 		std::vector<ERASE_CHK> block_erase_check(bool erase_flag = true);
+
+		//data_やflagsのメモリ位置を取得
+		int get_memorypos(int x, int y) const { return y * field_size_.x + x; }
 
 	public:
 		//その位置のブロックが何個つながっているか

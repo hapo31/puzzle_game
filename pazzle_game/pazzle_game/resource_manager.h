@@ -12,6 +12,8 @@ namespace res
 {
 	enum RES_ID
 	{
+		TITLE_LOGO,
+		TITLE_TITLE,
 		GAME_BLOCK,
 		GAME_FIELD,
 		GAME_BACKGROUND,
