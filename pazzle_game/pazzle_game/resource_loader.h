@@ -41,12 +41,19 @@ namespace res
 			int size;
 			int tick;
 			int type;
-		};
-		//const charŒ^‚Ìƒ|ƒCƒ“ƒ^‚ðfont_infoŒ^‚É•ÏŠ·‚µ‚Ä‚­‚¾‚µ‚ 
-		virtual int Load(const char* font_infop_fontdata) override
+		} font;
+
+		void set_fontinfo(const std::string& fontname, int size, int tick, int type)
 		{
-			const font_info* info = (const font_info*) (font_infop_fontdata);
-			return CreateFontToHandle( info->font_name.c_str(), info->size, info->tick, info->type);
+			font.font_name = fontname;
+			font.size = size;
+			font.tick = tick;
+			font.type = type;
+		}
+
+		virtual int Load(const char* null) override
+		{
+			return CreateFontToHandle( font.font_name.c_str(), font.size, font.tick, font.type);
 		}
 		virtual bool Delete(int handle) override
 		{

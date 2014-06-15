@@ -9,6 +9,10 @@ namespace level
 {
 	class Title : public ILevel
 	{
+		enum MENU
+		{
+			START, CONFIG, EXIT
+		};
 		const LEVEL_ID id = TITLE;
 		int menu_select = 0;
 		std::array<std::pair<std::string,LEVEL_ID>, 3> menu;
