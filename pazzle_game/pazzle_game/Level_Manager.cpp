@@ -30,7 +30,16 @@ level_t Level_Manager::execute()
 	{
 	case INIT:
 		if (level_stack.front()->init())
+		{
 			state = EXE;
+#ifdef _DEBUG
+			{
+				char buf[256];
+				sprintf_s<sizeof buf>(buf, "Init Success ID:%d\n", level_stack.front()->get_myid());
+				OutputDebugStringA(buf);
+			}
+#endif
+		}
 		break;
 	case EXE:
 		level_stack.front()->execute();
@@ -41,15 +50,28 @@ level_t Level_Manager::execute()
 
 		if (level_stack.empty() || level_stack.front()->end())
 		{
+#ifdef _DEBUG
+			{
+				char buf[256];
+				sprintf_s<sizeof buf>(buf, "End Success ID:%d\n", level_stack.empty() ? -1 : level_stack.front()->get_myid());
+				OutputDebugStringA(buf);
+			}
+#endif
 			switch (state)
 			{
 			case NEXT:
 				level_stack.push_front(levels[next_id]);
-
+#ifdef _DEBUG
+				{
+					char buf[256];
+					sprintf_s<sizeof buf>(buf, "Switched Level ID:%d\n", next_id);
+					OutputDebugStringA(buf);
+				}
+#endif
 				next_id = 0;
 				break;
 			case END_BACK:
-				level_stack.pop_back();
+				level_stack.pop_front();
 			case END:
 
 				break;

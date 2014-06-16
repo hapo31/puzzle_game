@@ -19,7 +19,7 @@ namespace level
 		std::array<res::resource, 2> resdata;
 		res::font_controler::font_info *info = nullptr;
 		bool loading = false;
-
+		bool end_flag = false;
 		int bright = 0;
 		
 	public:

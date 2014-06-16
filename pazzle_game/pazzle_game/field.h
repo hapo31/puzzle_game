@@ -25,7 +25,8 @@ namespace GameObject
 		
 		//そのフレームで生成されたブロックの数
 		int create_num = 0;
-
+		//スコア
+		int score_ = 0;
 		enum{ erase_min = 1 };
 
 		//x,y 次に調べるブロックの座標
@@ -91,6 +92,7 @@ namespace GameObject
 		void block_swap(int ax, int ay, int bx, int by);
 		void block_swap(const util::pos<int>& a, const util::pos<int>& b){ block_swap(a.x, a.y, b.x, b.y); }
 
+		int get_score() const { return score_; }
 		int get_flag(int x, int y) const { return flags_ [ y * field_size_.x + x]; }
 		block_iterator block_iterator_begin() { return data_.begin(); }
 		block_iterator block_iterator_end() { return data_.end(); }

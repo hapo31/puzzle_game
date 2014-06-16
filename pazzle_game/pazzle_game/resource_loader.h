@@ -9,12 +9,16 @@ namespace res
 	public:
 		virtual int Load(const char* filename) override
 		{
+#ifdef _DEBUG
 			OutputDebugStringA("Load\n");
+#endif
 			return LoadGraph(filename);
 		}
 		virtual bool Delete(int handle) override
 		{
+#ifdef _DEBUG
 			OutputDebugStringA("Delete\n");
+#endif
 			return DeleteGraph(handle) != -1;
 		}
 	};

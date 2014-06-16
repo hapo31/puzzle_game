@@ -154,5 +154,8 @@
     <ClCompile Include="Level_Manager.cpp">
       <Filter>Levels\source</Filter>
     </ClCompile>
+    <ClCompile Include="GameMain.cpp">
+      <Filter>Levels\source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -35,6 +35,8 @@ namespace res
 		//読み込みファイルとローダーを登録する
 		//同じものが登録されていればそのリソースへの参照を返し、なければ新しく生成する
 		resource& Regist(const char* filename, Loader file_loader, bool cache = false);
+		//名前を指定してリソースを取得 存在しない場合はstd::runtime_errorを投げる
+		resource& Get_RegistedResource(const char* resource_name) throw(std::runtime_error);
 		//リソースの明示的消去
 		bool Unregist(const resource& resource_);
 		static Resource_mng* get_Instance() 

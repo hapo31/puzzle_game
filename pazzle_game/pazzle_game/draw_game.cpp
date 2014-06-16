@@ -47,11 +47,12 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 	{
 		for (int j = 0; j < field_size.x; ++j)
 		{
-			draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+			
 			switch (object.get_flag(j, i))
 			{
 			case FLAG::WALLCONNECT:
+				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 				DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
 					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,
@@ -59,16 +60,26 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 					);
 				break;
 			case FLAG::ERASING:
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, object.get_block_const(j, i).get_eraseframe());
+				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
 				DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
 					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,
 					GetColor(255, 255, 0), true
 					);
 				break;
+			default:
+				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
+				break;
 			}
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
+	DrawFormatString
+		((x + (block_size_.x + frame_tickness) * field_size.x) / 2,
+		y + (block_size_.y + frame_tickness) * field_size.y + 5,
+		GetColor(0, 0, 0), "%d", object.get_score()
+		);
 }
 
 void draw_game::draw_Flags(int x, int y, const field& object) const

@@ -23,7 +23,7 @@ void block::rota(int dir)
 		bool t = connect_dir_ & 0x1;
 		//右にずらして4ビット目にtを挿入
 		connect_dir_ >>= 1;
-		connect_dir_ |= (int) (t << 4);
+		connect_dir_ |= (int) (t << 3);
 	}
 }
 

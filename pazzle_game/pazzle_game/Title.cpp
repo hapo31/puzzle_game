@@ -28,10 +28,11 @@ bool Title::init()
 	{
 		auto gr_loader = get_loader<graphic_controler>();
 		auto font_loader = get_loader<font_controler>();
-		font_loader->set_fontinfo("MS Gothic",3 ,40, DX_FONTTYPE_ANTIALIASING_8X8);
 		auto mng = res::Resource_mng::get_Instance();
+
+		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_8X8);
 		resdata[0] = mng->Regist("data/title.png", gr_loader);
-		resdata[1] = mng->Regist("", font_loader);
+		resdata[1] = mng->Regist("MS Gothic", font_loader);
 		loading = true;
 		bright = 0;
 		resdata[0].Load();
@@ -55,14 +56,17 @@ bool Title::init()
 
 int Title::execute()
 {
-	if (bright < 255)
+	if (bright < 255 && !end_flag)
 	{
 		bright += 5;
-		SetDrawBright(bright, bright, bright);
 	}
-	else
+	else if (bright > 0 && end_flag)
 	{
-
+		bright -= 5;
+	}
+	SetDrawBright(bright, bright, bright);
+	if (!end_flag)
+	{
 		if (ctrl1->at(input::UP) == 1)
 		{
 			menu_select = menu_select - 1 < 0 ? menu_select = 2 : menu_select - 1;
@@ -77,33 +81,43 @@ int Title::execute()
 			{
 			case START:
 				level_mng->set_next_level(level::GAME_MAIN);
-			break;
+				end_flag = true;
+				break;
 			case EXIT:
 				exit(0);
 			default:
 				break;
 			}
 		}
+	}
 
-		DrawBox(0, 0, WindowWidth, WindowHeight, GetColor(255, 255, 255), true);
-		DrawGraph(WindowWidth / 2 - 200, 20 , resdata[0], true);
-		int menu_color[3] = { GetColor(0, 0, 0), GetColor(0, 0, 0), GetColor(0, 0, 0) };
-		menu_color[menu_select] = GetColor(255, 0, 0);
+	DrawBox(0, 0, WindowWidth, WindowHeight, GetColor(255, 255, 255), true);
+	DrawGraph(WindowWidth / 2 - 200, 20, resdata[0], true);
+	int menu_color[3] = { GetColor(0, 0, 0), GetColor(0, 0, 0), GetColor(0, 0, 0) };
+	menu_color[menu_select] = GetColor(255, 0, 0);
+	{
+		int i = 0;
+		for (auto & it : menu)
 		{
-			int i = 0;
-			for (auto & it : menu)
-			{
-				DrawFormatString(WindowWidth / 3, WindowHeight - 200 + i * 40, menu_color[i], it.first.c_str());
-				++i;
-			}
+			DrawFormatStringToHandle(WindowWidth / 3, WindowHeight - 250 + i * 60, menu_color[i],resdata[1] ,"%s", it.first.c_str());
+			++i;
 		}
 	}
-	return 0;
+	return bright;
 }
 
 bool Title::end()
 {
-	for (auto& it : resdata)
-		it.Delete();
-	return true;
+	if (execute() <= 0)
+	{
+		for (auto& it : resdata)
+			it.Delete();
+		this->loading = false;
+		end_flag = false;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

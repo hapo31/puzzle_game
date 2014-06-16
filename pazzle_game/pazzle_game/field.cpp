@@ -27,6 +27,7 @@ void field::initialize()
 			}
 			else
 			{
+				data_[corrent] = block::block_new(10, 0);
 				// ブロックを初期化する
 				data_[corrent].erase();
 			}
@@ -358,7 +359,11 @@ void field::block_update()
 				if (!data_[i].decrement_eraseframe())
 				{
 					if (data_[i].get_block_type() != WALL)
+					{
+						//仮のスコア処理
+						score_ += connectnum[i] * 30;
 						data_[i].erase();
+					}
 					flags_[i] = NOP;
 				}
 				break;
