@@ -7,7 +7,7 @@ namespace level
 	{
 		const LEVEL_ID id;
 	public:
-		GameMain() = default;
+		GameMain() {};
 		virtual int execute() override{ return 0; };
 		virtual int get_myid() const override{ return id; }
 

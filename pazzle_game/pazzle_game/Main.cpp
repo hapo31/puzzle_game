@@ -28,7 +28,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	rnd->set_seed(std::random_device()());
 
 	level::Level_Manager::get_Instance()->regist_level(level::TITLE, level::create_level<level::Title>());
-	//level::Level_Manager::get_Instance()->regist_level(level::GAME_MAIN, level::create_level<level::GameMain>());
+	level::Level_Manager::get_Instance()->regist_level(level::GAME_MAIN, level::create_level<level::GameMain>());
 
 	levelmng->set_next_level(level::TITLE);
 	
