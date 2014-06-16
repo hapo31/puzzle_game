@@ -82,7 +82,7 @@ int GameMain::execute()
 		//カウントダウン表示
 		if (status->frames < 150)
 		{
-			DrawFormatStringToHandle(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), resdata[2], "%d", status->count_down);
+			DrawFormatString(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), "%d", status->count_down);
 			if (status->frames % 60 == 0)
 			{
 				--status->count_down;
@@ -115,6 +115,7 @@ int GameMain::execute()
 
 			if (ctrl1->at(input::A) == 1)
 			{
+				PlaySoundMem(resdata[1], DX_PLAYTYPE_BACK);
 				if (status->cursor_mode != cursor::MODE::SOLO)
 					cursor_->swap(cursor::M_DIR::RIGHT);
 				else
@@ -122,6 +123,7 @@ int GameMain::execute()
 			}
 			if (ctrl1->at(input::B) == 1)
 			{
+				PlaySoundMem(resdata[1], DX_PLAYTYPE_BACK);
 				if (status->cursor_mode != cursor::MODE::SOLO)
 					cursor_->swap(cursor::M_DIR::LEFT);
 				else
@@ -165,6 +167,7 @@ bool GameMain::end()
 {
 	if (execute() <= 0)
 	{
+
 		for (auto& it : resdata)
 		{
 			it.Delete();
