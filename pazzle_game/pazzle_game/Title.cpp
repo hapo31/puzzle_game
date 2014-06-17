@@ -16,7 +16,7 @@ namespace
 
 Title::Title()
 {
-	menu[0] = std::make_pair( "GAME START" ,LEVEL_ID::GAME_MAIN);
+	menu[0] = std::make_pair( "Game Start" ,LEVEL_ID::GAME_MAIN);
 	menu[1] = std::make_pair( "Config" , LEVEL_ID::CONFIG);
 	menu[2] = std::make_pair( "Exit" ,LEVEL_ID::EXIT);
 }
@@ -35,21 +35,22 @@ bool Title::init()
 		resdata[1] = mng->Regist("MS Gothic", font_loader);
 		loading = true;
 		bright = 0;
-		resdata[0].Load();
+		resdata[0]->Load();
 		for (auto& it : resdata)
-			it.Load();
+			it->Load();
 		return false;
 	}
 	else
 	{
-		if (!resdata[0].is_Loaded() ||
-			!resdata[1].is_Loaded())
+		if (resdata[0]->is_Loaded() ||
+			resdata[1]->is_Loaded())
 		{
-			return false;
+			loading = false;
+			return true;
 		}
 		else
 		{
-			return true;
+			return false;
 		}
 	}
 }
@@ -84,7 +85,8 @@ int Title::execute()
 				end_flag = true;
 				break;
 			case EXIT:
-				exit(0);
+				level_mng->game_exit();
+				break;
 			default:
 				break;
 			}
@@ -92,14 +94,14 @@ int Title::execute()
 	}
 
 	DrawBox(0, 0, WindowWidth, WindowHeight, GetColor(255, 255, 255), true);
-	DrawGraph(WindowWidth / 2 - 200, 20, resdata[0], true);
+	DrawGraph(WindowWidth / 2 - 200, 20, *resdata[0], true);
 	int menu_color[3] = { GetColor(0, 0, 0), GetColor(0, 0, 0), GetColor(0, 0, 0) };
 	menu_color[menu_select] = GetColor(255, 0, 0);
 	{
 		int i = 0;
 		for (auto & it : menu)
 		{
-			DrawFormatStringToHandle(WindowWidth / 3, WindowHeight - 250 + i * 60, menu_color[i],resdata[1] ,"%s", it.first.c_str());
+			DrawFormatStringToHandle(WindowWidth / 3, WindowHeight - 250 + i * 60, menu_color[i], *resdata[1] ,"%s", it.first.c_str());
 			++i;
 		}
 	}
@@ -111,7 +113,7 @@ bool Title::end()
 	if (execute() <= 0)
 	{
 		for (auto& it : resdata)
-			it.Delete();
+			it->Delete();
 		this->loading = false;
 		end_flag = false;
 		return true;

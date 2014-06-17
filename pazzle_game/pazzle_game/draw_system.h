@@ -16,7 +16,7 @@ namespace draw
 		util::pos<int> block_size_;
 		util::pos<int> field_draw_;
 
-		std::array<res::resource, 50> res;
+		std::array<res::resource_sh, 50> res;
 		res::resource background = nullptr;
 		
 		int frame = 0;

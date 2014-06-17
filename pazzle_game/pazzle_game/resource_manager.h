@@ -20,8 +20,8 @@ namespace res
 		RES_MAX_ = RES_MAX,
 	};
 	//resource = リソース型 bool = リソースを消さずにキャッシュしておくかどうか
-	using res_tuple = std::tuple<res::resource, bool>;
-	inline auto get_resource(res_tuple& tuple) -> decltype(std::get<0>(tuple))& { return std::get<0>(tuple); }
+	using res_tuple = std::tuple<resource_sh, bool>;
+	inline auto get_resource(res_tuple& tuple) -> decltype(std::get<0>(tuple)) { return std::get<0>(tuple); }
 	inline auto get_cacheflag(res_tuple& tuple) -> decltype(std::get<1>(tuple)){ return std::get<1>(tuple); }
 
 	class Resource_mng
@@ -34,9 +34,9 @@ namespace res
 	public:
 		//読み込みファイルとローダーを登録する
 		//同じものが登録されていればそのリソースへの参照を返し、なければ新しく生成する
-		resource& Regist(const char* filename, Loader file_loader, bool cache = false);
+		resource_sh Regist(const char* filename, Loader file_loader, bool cache = false);
 		//名前を指定してリソースを取得 存在しない場合はstd::runtime_errorを投げる
-		resource& Get_RegistedResource(const char* resource_name) throw(std::runtime_error);
+		resource_sh Get_RegistedResource(const char* resource_name) ;
 		//リソースの明示的消去
 		bool Unregist(const resource& resource_);
 		static Resource_mng* get_Instance() 

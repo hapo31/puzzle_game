@@ -32,7 +32,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	levelmng->set_next_level(level::TITLE);
 	
-	while (!CheckHitKey(KEY_INPUT_ESCAPE))
+	while (1)
 	{
 		ClearDrawScreen();
 

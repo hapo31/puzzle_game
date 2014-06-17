@@ -16,7 +16,7 @@ namespace level
 		const LEVEL_ID id = TITLE;
 		int menu_select = 0;
 		std::array<std::pair<std::string,LEVEL_ID>, 3> menu;
-		std::array<res::resource, 2> resdata;
+		std::array<res::resource_sh, 2> resdata;
 		res::font_controler::font_info *info = nullptr;
 		bool loading = false;
 		bool end_flag = false;

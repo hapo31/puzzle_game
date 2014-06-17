@@ -1,4 +1,5 @@
 #include"Level_Manager.h"
+#include"resource_manager.h"
 
 using namespace level;
 
@@ -28,7 +29,9 @@ level_t Level_Manager::execute()
 {
 	switch (state)
 	{
+		//初期化
 	case INIT:
+		
 		if (level_stack.front()->init())
 		{
 			state = EXE;
@@ -40,12 +43,24 @@ level_t Level_Manager::execute()
 			}
 #endif
 		}
+		//初期化が終わっていなければローディング画面表示
+		else
+		{
+			SetDrawBright(255, 255, 255);
+			DrawString(0, 0, "Now Loading...", GetColor(255, 255, 0));
+		}
 		break;
+		//実行
 	case EXE:
 		level_stack.front()->execute();
 		break;
-	case NEXT:
+	
 	case END:
+		exit(0);
+		break;
+		
+		//Level終了処理
+	case NEXT:
 	case END_BACK:
 
 		if (level_stack.empty() || level_stack.front()->end())
@@ -72,8 +87,6 @@ level_t Level_Manager::execute()
 				break;
 			case END_BACK:
 				level_stack.pop_front();
-			case END:
-
 				break;
 			}
 			state = INIT;
@@ -95,4 +108,10 @@ bool Level_Manager::back_level()
 	{
 		return false;
 	}
+}
+
+bool Level_Manager::game_exit()
+{
+	state = END;
+	return true;
 }

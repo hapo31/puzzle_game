@@ -16,6 +16,15 @@ using namespace draw;
 GameMain::GameMain()
 {}
 
+enum RESID
+{
+	BGM,
+	PANEL_CHANGE,
+	PANEL_DESTROY,
+	FONT_MSG,
+
+};
+
 namespace
 {
 	auto control = input::Controler_Manager::get_Instance();
@@ -35,9 +44,10 @@ bool GameMain::init()
 
 		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_8X8);
 
-		resdata[0] = mng->Regist("data/Play01.ogg", snd_loader);
-		resdata[1] = mng->Regist("data/panel_change01.ogg", snd_loader);
-		resdata[2] = mng->Regist("MS Gothic2", font_loader);
+		resdata[BGM] = mng->Regist("data/Play01.ogg", snd_loader);
+		resdata[PANEL_CHANGE] = mng->Regist("data/panel_change01.ogg", snd_loader);
+		resdata[PANEL_DESTROY] = mng->Regist("data/block_destroy.ogg", snd_loader);
+		resdata[FONT_MSG] = mng->Regist("MS Gothic2", font_loader);
 
 		draw_ = std::make_shared<draw_game>();
 		field_ = std::make_shared<field>(7, 7);
@@ -46,14 +56,18 @@ bool GameMain::init()
 		field_->initialize();
 
 		for (auto& it : resdata)
-			it.Load();
+		{
+			if (it && it->is_Enable())
+				it->Load();
+		}
 
 		loading = true;
 		return false;
 	}
-	else if (resdata[0].is_Loaded() ||
-			resdata[1].is_Loaded() ||
-			resdata[2].is_Loaded())
+	else if (resdata[BGM]->is_Loaded() ||
+			resdata[PANEL_CHANGE]->is_Loaded() ||
+			resdata[PANEL_DESTROY]->is_Loaded() ||
+			resdata[FONT_MSG]->is_Loaded())
 	{
 		loading = false;
 		return true;
@@ -66,6 +80,10 @@ bool GameMain::init()
 
 int GameMain::execute()
 {
+	if (!status->end_flag && CheckHitKey(KEY_INPUT_ESCAPE))
+	{
+		level::Level_Manager::get_Instance()->back_level();
+	}
 	if (!status->end_flag && status->bright < 255)
 	{
 		status->bright += 5;
@@ -82,6 +100,8 @@ int GameMain::execute()
 		//カウントダウン表示
 		if (status->frames < 150)
 		{
+
+			DrawFormatStringToHandle(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), *resdata[FONT_MSG], "%d", status->count_down);
 			DrawFormatString(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), "%d", status->count_down);
 			if (status->frames % 60 == 0)
 			{
@@ -91,7 +111,7 @@ int GameMain::execute()
 		//スタート時の処理
 		else if (status->frames == 150)
 		{
-			PlaySoundMem(resdata[0], DX_PLAYTYPE_LOOP);
+			PlaySoundMem(*resdata[BGM], DX_PLAYTYPE_LOOP);
 		}
 		else
 		{
@@ -115,7 +135,7 @@ int GameMain::execute()
 
 			if (ctrl1->at(input::A) == 1)
 			{
-				PlaySoundMem(resdata[1], DX_PLAYTYPE_BACK);
+				PlaySoundMem(*resdata[PANEL_CHANGE], DX_PLAYTYPE_BACK);
 				if (status->cursor_mode != cursor::MODE::SOLO)
 					cursor_->swap(cursor::M_DIR::RIGHT);
 				else
@@ -123,7 +143,7 @@ int GameMain::execute()
 			}
 			if (ctrl1->at(input::B) == 1)
 			{
-				PlaySoundMem(resdata[1], DX_PLAYTYPE_BACK);
+				PlaySoundMem(*resdata[PANEL_CHANGE], DX_PLAYTYPE_BACK);
 				if (status->cursor_mode != cursor::MODE::SOLO)
 					cursor_->swap(cursor::M_DIR::LEFT);
 				else
@@ -143,7 +163,6 @@ int GameMain::execute()
 			else
 			{
 				level_mng->back_level();
-				status->end_flag = true;
 			}
 		}
 	}
@@ -157,7 +176,7 @@ int GameMain::execute()
 		int t1 = (int)status->time;			//100.55 -> 100
 		int t2 = (int)(status->time * 1000);	//100.55 -> 10055
 		int mm = t2 - t1 * 1000;				// 10055 - 100*100 -> 55 ?
-		DrawFormatStringToHandle(WindowWidth  - 580, 0, GetColor(0, 0, 0), resdata[2], "Time: %02d:%02d.%03d", min, sec, mm);
+		DrawFormatStringToHandle(WindowWidth  - 580, 0, GetColor(0, 0, 0), *resdata[FONT_MSG], "Time: %02d:%02d.%03d", min, sec, mm);
 	}
 	draw_->add_frame();
 	return status->bright;
@@ -165,12 +184,13 @@ int GameMain::execute()
 
 bool GameMain::end()
 {
+	status->end_flag = true;
 	if (execute() <= 0)
 	{
-
 		for (auto& it : resdata)
 		{
-			it.Delete();
+			if (it && it->is_Enable())
+				it->Delete();
 		}
 		loading = false;
 		status = nullptr;
@@ -181,6 +201,7 @@ bool GameMain::end()
 	}
 	else
 	{
+		SetVolumeMusicMem(status->bright, *resdata[BGM]);
 		return false;
 	}
 }

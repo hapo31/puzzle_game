@@ -21,19 +21,21 @@ enum RES
 {
 	BLOCK,
 	FIELD,
+	FONT
 };
 
 draw_game::draw_game() : block_size_(block_size, block_size)
 {
-	auto* resmn = Resource_mng::get_Instance();
+	auto resmn = Resource_mng::get_Instance();
+	auto font_loader = res::get_loader<font_controler>();
 	auto gr_control = get_loader<graphic_controler>();
-	this->res[RES::BLOCK] = resmn->Regist("block.png", gr_control);
-	this->res[RES::FIELD] = resmn->Regist("field.png", gr_control);
 
+	this->res[RES::BLOCK] = resmn->Regist("data/block.png", gr_control);
+	this->res[RES::FIELD] = resmn->Regist("data/field.png", gr_control);
 	for (auto& r : res)
 	{
-		if (r.is_Enable())
-			r.Load();
+		if (r && r->is_Enable())
+			r->Load();
 	}
 }
 
@@ -127,11 +129,12 @@ void draw_game::draw_Flags(int x, int y, const field& object) const
 }
 
 const double PI = 3.1415926;
+inline int BLINK_(int timer, int base, double spd) { return abs((int) (timer*spd) % base * 2 - base); }
 
 void draw_game::draw_coursor(int x, int y, const cursor& object) const
 {
 	auto rect = object.get_rect();
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, int(55 * sin(frame / 10) ) + 100);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BLINK_(frame, 150, 3) + 55);
 	for (int i = rect.top; i < rect.bottom; ++i)
 	{
 		for (int j = rect.left; j < rect.right; ++j)

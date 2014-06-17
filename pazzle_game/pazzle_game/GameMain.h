@@ -29,7 +29,7 @@ namespace level
 		std::shared_ptr<GameObject::field> field_;
 		std::shared_ptr<GameObject::cursor> cursor_;
 
-		std::array<res::resource, 3> resdata;
+		std::array<res::resource_sh, 30> resdata;
 	public:
 		GameMain();
 		virtual int execute() override;

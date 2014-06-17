@@ -18,21 +18,33 @@ namespace res
 
 		explicit resource(Loader loader_) : loader(loader_){}
 
+		//ファイルとローダー指定
 		explicit resource(const char* filename, Loader loader_) : loader(loader_), filename_(filename)
 		{
 			if (!loader)
 				std::runtime_error("Handle controler is null");
 		}
+		//Move constractor
 		resource(resource&& rval)
 		{
 			*this = std::move(rval);
 		}
+		//nullptr constractor
 		resource(std::nullptr_t nullptr_) : handle(nullptr_) {}
 		~resource()
 		{ 
 			Delete();
 		}
 
+		resource& operator=(const resource& rvalue)
+		{
+			if (handle.use_count() == 1)
+				Delete();
+			loader = rvalue.loader;
+			filename_ = rvalue.filename_;
+			handle = rvalue.handle;
+			return *this;
+		}
 		resource& operator=(std::shared_ptr<int>& value)
 		{
 			if (value == nullptr)
@@ -82,4 +94,6 @@ namespace res
 			SetUseASyncLoadFlag(value);
 		}
 	};
+	using resource_sh = std::shared_ptr <resource>;
+	inline resource_sh make_resource(const std::string& filename, Loader loader) { return std::make_shared<resource>(filename.c_str(), loader); }
 }

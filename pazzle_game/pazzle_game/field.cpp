@@ -3,6 +3,8 @@
 #include"draw_system.h"
 #include"random_manager.h"
 
+#include"resource_manager.h"
+
 using namespace GameObject;
 using namespace util;
 
@@ -334,6 +336,8 @@ void field::block_swap(int ax, int ay, int bx, int by)
 void field::block_update()
 {	
 	bool no_create = create_num == 0;
+	//ƒuƒƒbƒN‚ªÁ‹‚³‚ê‚½
+	bool erased = false;
 	//‰º‚ÉŒ„ŠÔ‚ª‚È‚­‚È‚é‚æ‚¤‚É—‚Æ‚·
 	for (int i = 0; i < field_size_.x; ++i)
 	{
@@ -364,6 +368,7 @@ void field::block_update()
 						score_ += connectnum[i] * 30;
 						data_[i].erase();
 					}
+					erased = true;
 					flags_[i] = NOP;
 				}
 				break;
@@ -373,6 +378,12 @@ void field::block_update()
 		{
 			flags_[i] = NOP;
 		}
+	}
+	if (erased)
+	{
+	
+		auto t = res::Resource_mng::get_Instance()->Get_RegistedResource("data/block_destroy.ogg");
+		PlaySoundMem(*t, DX_PLAYTYPE_BACK);
 	}
 	create_num = 0;
 }

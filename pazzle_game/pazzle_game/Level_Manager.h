@@ -37,6 +37,9 @@ namespace level
 		//Às
 		level_t execute();
 
+		//ƒQ[ƒ€‚ğI—¹‚·‚é
+		bool game_exit();
+
 		int get_frame() const { return frame; }
 	};
 	template<class T>
