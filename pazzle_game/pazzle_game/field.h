@@ -23,6 +23,9 @@ namespace GameObject
 		std::vector<block> data_;
 		//ブロックに付けられたフラグ
 		std::vector<ERASE_CHK> flags_;
+		//フラグのテンポラリ
+		std::vector<ERASE_CHK> flags_tmp;
+
 		util::pos<int> field_size_;
 
 		std::array<res::resource_sh, 1> resdata;
@@ -36,7 +39,7 @@ namespace GameObject
 		//x,y 次に調べるブロックの座標
 		//bef_pos 現在の座標(次の呼び出しでどの方向から呼ばれたかを得るため
 		//erase_num 消える個数
-		int block_erase_impl(int x, int y, int bef_pos, int erase_num = erase_min - 1);
+		int block_erase_impl(int x, int y, int bef_pos, std::vector<ERASE_CHK>& flags , int erase_num = erase_min - 1);
 
 		//ブロックが消えるまでのフレーム数
 		int erase_frame = 150;
@@ -80,10 +83,12 @@ namespace GameObject
 		block& get_block(int x, int y) { return data_[ y * field_size_.x + x ]; }
 		const block& get_block_const(int x, int y) const { return data_[y * field_size_.x + x]; }
 
+		//ブロックを指定位置に置換する
 		void set_block(int x, int y, block&& object)
 		{
 			data_[y * field_size_.x + x] = std::move(object);
 		}
+		//ブロックを指定位置に置換する メモリチェックありバージョン
 		bool set_block_secure(int x, int y, block&& object)
 		{
 			if (x < 0 || x >= field_size_.x || y < 0 || y >= field_size_.y)
@@ -91,6 +96,17 @@ namespace GameObject
 			data_[y * field_size_.x + x] = std::move(object);
 			return true;
 		}
+		//フラグをセット(副作用に注意)
+		void set_flag(int x, int y, ERASE_CHK flag)
+		{
+			flags_[y * field_size_.x + x] = flag;
+		}
+		//指定座標のブロックのeraseframeを初期化
+		void reset_eraseframe(int x, int y)
+		{
+			data_[y * field_size_.x + x].set_eraseframe(erase_frame);
+		}
+		int get_eraseframe() const { return erase_frame; }
 
 		//aとbを入れ替える
 		void block_swap(int ax, int ay, int bx, int by);

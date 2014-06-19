@@ -15,7 +15,7 @@ enum
 	BLOCK_DESTROY
 };
 
-field::field(int x, int y) : field_size_(x + 2, y + 2), data_((x + 4) * (y + 4)), flags_((x + 4) * (y + 4))
+field::field(int x, int y) : field_size_(x + 2, y + 2), data_((x + 4) * (y + 4)), flags_((x + 4) * (y + 4)), flags_tmp((x + 4) * (y + 4))
 , connectnum((x + 4) * (y + 4))
 {
 	resdata[BLOCK_DESTROY] = res::Resource_mng::get_Instance()->Get_RegistedResource("data/block_destroy.ogg");
@@ -146,7 +146,11 @@ int field::fall_block(int x, int y, int n)
 std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 {
 	//flags初期化
-	for (auto& it : flags_) if (it != ERASING && it != ERASE) it = NOP;
+	//for (auto& it : flags_) if (it != ERASING && it != ERASE) it = NOP;
+
+	//tmpを初期化
+	flags_tmp.assign(flags_tmp.size(), NOP);
+
 	for (auto& it : connectnum) it = 0;
 
 	for (int i = 0; i < field_size_.y; ++i)
@@ -167,38 +171,57 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 					//新ブロックなら繋がらなくなるまで回す
 				
 					while (data_[down].is_new() && data_[down] & UP) data_[down].rota(0);
-					if ((connectnum[corrent] = block_erase_impl(j, i + 1, corrent)) != 0)
-						flags_[corrent] = ERASE;
+					if ((connectnum[corrent] = block_erase_impl(j, i + 1, corrent, flags_tmp)) != 0)
+						flags_tmp[corrent] = ERASE;
 					else
-						flags_[corrent] = NOP;
+						flags_tmp[corrent] = NOP;
 				}
 				if (right < (int) data_.size() &&  (data_[right] & LEFT))
 				{
 					while (data_[right].is_new() && data_[right] & LEFT) data_[right].rota(0);
-					if ((connectnum[corrent] = block_erase_impl(j + 1, i, corrent)) != 0)
-						flags_[corrent] = ERASE;
+					if ((connectnum[corrent] = block_erase_impl(j + 1, i, corrent, flags_tmp)) != 0)
+						flags_tmp[corrent] = ERASE;
 					else
-						flags_[corrent] = NOP;
+						flags_tmp[corrent] = NOP;
 				}
 				if (left >= 0 && (data_[left] & RIGHT))
 				{
 					while (data_[left].is_new() && data_[left] & RIGHT) data_[left].rota(0);
-					if ((connectnum[corrent] = block_erase_impl(j - 1, i, corrent)) != 0)
-						flags_[corrent] = ERASE;
+					if ((connectnum[corrent] = block_erase_impl(j - 1, i, corrent, flags_tmp)) != 0)
+						flags_tmp[corrent] = ERASE;
 					else
-						flags_[corrent] = NOP;
+						flags_tmp[corrent] = NOP;
 				}
 				if (up >= 0 &&  (data_[up] & DOWN))
 				{
 					while (data_[up].is_new() && data_[up] & DOWN) data_[up].rota(0);
-					if ((connectnum[corrent] = block_erase_impl(j, i - 1, corrent)) != 0)
-						flags_[corrent] = ERASE;
+					if ((connectnum[corrent] = block_erase_impl(j, i - 1, corrent, flags_tmp)) != 0)
+						flags_tmp[corrent] = ERASE;
 					else
-						flags_[corrent] = NOP;
+						flags_tmp[corrent] = NOP;
 				}
-				if (flags_[corrent] == ERASE && flag_tmp == ERASING)
-					flags_[corrent] = ERASING;
+				//if (flags_[corrent] == ERASE && flag_tmp == ERASING)
+				//	flags_[corrent] = ERASING;
 			}
+		}
+	}
+	{
+		auto it = flags_.begin();
+		auto it2 = flags_tmp.begin();
+		
+		while (it != flags_.end())
+		{
+			//tmpがERASEで、前フレームがERASINGだったらflagsをERASEにする
+			if (*it2 == ERASE && *it == ERASING)
+			{
+				*it = ERASING;
+			}
+			else
+			{
+				*it = *it2;
+			}
+			++it;
+			++it2;
 		}
 	}
 	return flags_;
@@ -213,13 +236,13 @@ void field::update()
 
 
 //ブロックチェックの実装部
-int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
+int field::block_erase_impl(int x, int y, int bef_pos, std::vector<ERASE_CHK>& flags_, int erase_num)
 {
 	int corrent = get_memorypos(x, y);
 	int t = 0;
 	//消す場合はtrue
 	bool this_erase = false;
-	ERASE_CHK flag_tmp = flags_[corrent];
+	//ERASE_CHK flag_tmp = flags_[corrent];
 
 	//壁の場合はそこで探索終了
 	if (data_[corrent].get_block_type() == WALL)
@@ -227,8 +250,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 		//最低消去数以上ならその時点での接続数を返す
 		if (erase_num > erase_min)
 		{
-			if (flag_tmp != ERASING)
-				flags_[corrent] = ERASE;
+			flags_[corrent] = ERASE;
 			return connectnum[corrent] = erase_num;
 		}
 		//未満なら0を返す
@@ -256,7 +278,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 		//右が左に繋がっているか
 		if (right != bef_pos && (data_[corrent] & RIGHT) && (data_[right].get_block_type() == WALL || data_[right] & LEFT))
 		{
-			if (t = block_erase_impl(x + 1, y, corrent, erase_num + 1))
+			if (t = block_erase_impl(x + 1, y, corrent, flags_, erase_num + 1))
 			{
 				this_erase = true;
 				flags_[corrent] = ERASE;
@@ -271,7 +293,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 		//左が右に繋がっているか
 		if ( left != bef_pos && (data_[corrent] & LEFT) && (data_[left].get_block_type() == WALL || data_[left] & RIGHT))
 		{
-			if (t = block_erase_impl(x - 1, y, corrent, erase_num + 1))
+			if (t = block_erase_impl(x - 1, y, corrent, flags_, erase_num + 1))
 			{
 				this_erase = true;
 				flags_[corrent] = ERASE;
@@ -286,7 +308,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 		//上が下に繋がっているか
 		if ( up != bef_pos && (data_[corrent] & UP) && (data_[up].get_block_type() == WALL || data_[up] & DOWN))
 		{
-			if (t = block_erase_impl(x, y - 1, corrent, erase_num + 1))
+			if (t = block_erase_impl(x, y - 1, corrent, flags_, erase_num + 1))
 			{
 				this_erase = true;
 				flags_[corrent] = ERASE;
@@ -301,7 +323,7 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 		//下が上に繋がっているか
 		if (down != bef_pos && (data_[corrent] & DOWN) && (data_[down].get_block_type() == WALL || data_[down] & UP))
 		{
-			if (t = block_erase_impl(x, y + 1, corrent, erase_num + 1))
+			if (t = block_erase_impl(x, y + 1, corrent, flags_, erase_num + 1))
 			{
 				this_erase = true;
 				flags_[corrent] = ERASE;
@@ -312,10 +334,6 @@ int field::block_erase_impl(int x, int y, int bef_pos, int erase_num)
 			{
 				connectnum[corrent] = 0;
 			}
-		}
-		if (this_erase && flag_tmp == ERASING)
-		{
-			flags_[corrent] = ERASING;
 		}
 	}
 	//行き止まり
@@ -337,6 +355,8 @@ void field::block_swap(int ax, int ay, int bx, int by)
 	block tmp = std::move(data_[ay * field_size_.x + ax]);
 	data_[ay * field_size_.x + ax] = std::move(data_[by * field_size_.x + bx]);
 	data_[by * field_size_.x + bx] = std::move(tmp);
+	flags_[ay * field_size_.x + ax] = NOP;
+	flags_[by * field_size_.x + bx] = NOP;
 }
 
 //ブロックの状態更新
@@ -375,7 +395,8 @@ void field::block_update()
 						score_ += connectnum[i] * 30;
 						data_[i].erase();
 					}
-					erased = true;
+					//壁で無ければ破壊音フラグを立てる
+					erased = data_[i].get_block_type() != WALL;
 					flags_[i] = NOP;
 				}
 				break;

@@ -101,6 +101,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource_loader.h" />
     <ClInclude Include="resource_manager.h" />
+    <ClInclude Include="Scoped_DxBlendMode.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="WindowSize.h" />
   </ItemGroup>

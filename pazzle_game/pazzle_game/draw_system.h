@@ -23,7 +23,7 @@ namespace draw
 	public:
 		draw_game();
 
-		void draw_Block(int x, int y, const GameObject::block& object) const;
+		void draw_Block(int x, int y, const GameObject::block& object, bool is_connect) const;
 		void draw_Field(int x, int y, const GameObject::field& object) const;
 		void draw_Flags(int x, int y, const GameObject::field& object) const;
 		void draw_coursor(int x, int y, const GameObject::cursor& object) const;

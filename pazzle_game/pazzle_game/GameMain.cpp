@@ -142,18 +142,18 @@ int GameMain::execute()
 			if (ctrl1->at(input::A) == 1)
 			{
 				PlaySoundMem(*resdata[PANEL_CHANGE], DX_PLAYTYPE_BACK);
-				if (status->cursor_mode != cursor::MODE::SOLO)
+				//if (status->cursor_mode != cursor::MODE::SOLO)
 					cursor_->swap(cursor::M_DIR::RIGHT);
-				else
-					cursor_->rotation(cursor::M_DIR::RIGHT);
+				//else
+					//cursor_->rotation(cursor::M_DIR::RIGHT);
 			}
 			if (ctrl1->at(input::B) == 1)
 			{
 				PlaySoundMem(*resdata[PANEL_CHANGE], DX_PLAYTYPE_BACK);
-				if (status->cursor_mode != cursor::MODE::SOLO)
+				//if (status->cursor_mode != cursor::MODE::SOLO)
 					cursor_->swap(cursor::M_DIR::LEFT);
-				else
-					cursor_->rotation(cursor::M_DIR::LEFT);
+				//else
+					//cursor_->rotation(cursor::M_DIR::LEFT);
 			}
 			if (ctrl1->at(input::C) == 1)
 			{
@@ -175,6 +175,7 @@ int GameMain::execute()
 	DrawBox(0, 0, WindowWidth, WindowHeight, GetColor(255, 255, 255), true);
 	//•`‰æˆ—
 	draw_->draw_Field(50, 50, *field_);
+	draw_->draw_Flags(50, 50, *field_);
 	draw_->draw_coursor(50, 50, *cursor_);
 	{
 		int min = (int) status->time / 60;

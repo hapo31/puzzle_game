@@ -4,7 +4,7 @@ using namespace GameObject;
 
 //auto input_dev = input::Controler_Manager<input::Controler<input::DxLibControl>>::get_Instance();
 
-cursor::cursor(field* target) : target_(target),
+cursor::cursor(field* target) : target_(target), mode(SOLO),
 pos(target->get_size().x / 2, target->get_size().y / 2),
 size(1, 1)
 {}
@@ -91,6 +91,7 @@ bool cursor::swap(M_DIR dir)
 	switch (mode)
 	{
 	case SOLO:
+		target_->reset_eraseframe(pos.x, pos.y);
 		if (dir == RIGHT)
 			target_->get_block(pos.x, pos.y).rota(0);
 		else

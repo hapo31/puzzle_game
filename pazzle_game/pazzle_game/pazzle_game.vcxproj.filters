@@ -127,6 +127,9 @@
     <ClInclude Include="Level_Manager.h">
       <Filter>Level\header</Filter>
     </ClInclude>
+    <ClInclude Include="Scoped_DxBlendMode.h">
+      <Filter>utility\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="field.cpp">

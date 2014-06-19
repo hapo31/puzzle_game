@@ -1,6 +1,7 @@
 #include"draw_system.h"
 #include"resource_manager.h"
 #include"resource_loader.h"
+#include"Scoped_DxBlendMode.h"
 
 #include<DxLib.h>
 
@@ -9,7 +10,8 @@ using namespace res;
 using namespace GameObject;
 
 const int CursorColor = GetColor(255, 50, 0);
-const int LineColor = GetColor(255, 255, 0);
+const int LineColor = GetColor(200, 200, 20);
+const int DarkLineColor = GetColor(150, 150, 0);
 const int BlockDefaultColor = GetColor(0, 128, 255);
 const int block_size = 64;
 //カーソル枠の太さ
@@ -49,28 +51,40 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 			switch (object.get_flag(j, i))
 			{
 			case FLAG::WALLCONNECT:
-				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
-				DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+			{
+				util::scoped_dx_blendmode d(DX_BLENDMODE_ADD, 100);
+				DrawBox(
+					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
+					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,
+					GetColor(255, 255, 255), true
+					);
+			}
+				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i), true);
+				/*DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 				DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
 					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,
 					GetColor(255, 0, 255), true
-					);
+					);*/
 				break;
 			case FLAG::ERASING:
-				DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, object.get_block_const(j, i).get_eraseframe());
-				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
-				DrawBox(
+				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i), true);
+				if (object.get_block_const(j, i).get_block_type() != GameObject::WALL)
+				{
+					util::scoped_dx_blendmode d(DX_BLENDMODE_ALPHA, 255 - object.get_block_const(j, i).get_eraseframe());
+					DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
 					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,
 					GetColor(255, 255, 0), true
 					);
+				}
 				break;
+			
 			default:
-				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
+				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i), false);
+			
 				break;
 			}
-			DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
 	DrawFormatStringToHandle
@@ -116,8 +130,8 @@ void draw_game::draw_Flags(int x, int y, const field& object) const
 				str = "Nw";
 			}
 			DrawString(3 + x + j * (block_size + frame_tickness), y + i * (block_size + frame_tickness), str.c_str(), color);
-			DrawFormatString(3 + x + j * (block_size + frame_tickness), 20 + y + i * (block_size + frame_tickness), GetColor(255, 255, 255), "%d", object.connectnum[i * field_size.x + j]);
-			DrawFormatString(3 + x + j * (block_size + frame_tickness), 40 + y + i * (block_size + frame_tickness), GetColor(255, 255, 255), "%d", object.get_block_const(j, i).get_eraseframe());
+			DrawFormatString(3 + x + j * (block_size + frame_tickness), 20 + y + i * (block_size + frame_tickness), GetColor(255, 0, 255), "%d", object.connectnum[i * field_size.x + j]);
+			DrawFormatString(3 + x + j * (block_size + frame_tickness), 40 + y + i * (block_size + frame_tickness), GetColor(255, 0, 255), "%d", object.get_block_const(j, i).get_eraseframe());
 
 			//(j * (block_size_.x + 5), i * (block_size_.y + 5), object.get_block(j, i));
 		}
@@ -130,7 +144,7 @@ inline int BLINK_(int timer, int base, double spd) { return abs((int) (timer*spd
 void draw_game::draw_coursor(int x, int y, const cursor& object) const
 {
 	auto rect = object.get_rect();
-	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, BLINK_(frame, 150, 3) + 55);
+	util::scoped_dx_blendmode d(DX_BLENDMODE_ALPHA, BLINK_(frame, 150, 3) + 55);
 	for (int i = rect.top; i < rect.bottom; ++i)
 	{
 		for (int j = rect.left; j < rect.right; ++j)
@@ -138,10 +152,9 @@ void draw_game::draw_coursor(int x, int y, const cursor& object) const
 			DrawBox(x + j * (block_size + frame_tickness), y + i * (block_size + frame_tickness), x + (j + 1) * (block_size + frame_tickness) - frame_tickness, y + (i + 1) * (block_size + frame_tickness) - frame_tickness, CursorColor, true);
 		}
 	}
-	DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void draw_game::draw_Block(int x, int y, const block& object) const
+void draw_game::draw_Block(int x, int y, const block& object, bool is_connect) const
 {
 	int cn = object.get_connect_dir();
 	//ブロックの中央座標
@@ -158,26 +171,29 @@ void draw_game::draw_Block(int x, int y, const block& object) const
 		//DrawBox(x, y, x + block_size_.x, y + block_size_.y, GetColor(128, 128, 128), true);
 		break;
 	case BLOCK_TYPE::BLOCK:
+	{
+		int color = is_connect ? LineColor : DarkLineColor;
 		//仮でDrawBox
 		//DrawBox(x, y, x + block_size_.x, y + block_size_.y, BlockDefaultColor, true);
 		//DrawGraph(x, y, *res[RES::BLOCK], true);
 		//線の方向にLineを描画する
 		if (cn & DIR::UP)
 		{
-			DrawLine(center.x, center.y, center.x, center.y - block_size_.y / 2, LineColor, blockline_tickness);
+			DrawLine(center.x, center.y, center.x, center.y - block_size_.y / 2, color, blockline_tickness);
 		}
 		if (cn & DIR::LEFT)
 		{
-			DrawLine(center.x, center.y, center.x - block_size_.x / 2, center.y, LineColor, blockline_tickness);
+			DrawLine(center.x, center.y, center.x - block_size_.x / 2, center.y, color, blockline_tickness);
 		}
 		if (cn & DIR::DOWN)
 		{
-			DrawLine(center.x, center.y, center.x, center.y + block_size_.y / 2, LineColor, blockline_tickness);
+			DrawLine(center.x, center.y, center.x, center.y + block_size_.y / 2, color, blockline_tickness);
 		}
 		if (cn & DIR::RIGHT)
 		{
-			DrawLine(center.x, center.y, center.x + block_size_.x / 2, center.y, LineColor, blockline_tickness);
+			DrawLine(center.x, center.y, center.x + block_size_.x / 2, center.y, color, blockline_tickness);
 		}
+	}
 		break;
 	}
 }
