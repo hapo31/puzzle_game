@@ -1,7 +1,9 @@
 #pragma once
 #include<vector>
+#include<array>
 #include"block.h"
 #include"Position.h"
+#include"resource.h"
 
 namespace GameObject
 {
@@ -22,6 +24,8 @@ namespace GameObject
 		//ブロックに付けられたフラグ
 		std::vector<ERASE_CHK> flags_;
 		util::pos<int> field_size_;
+
+		std::array<res::resource_sh, 1> resdata;
 		
 		//そのフレームで生成されたブロックの数
 		int create_num = 0;

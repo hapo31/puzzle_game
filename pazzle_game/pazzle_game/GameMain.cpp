@@ -21,6 +21,9 @@ enum RESID
 	BGM,
 	PANEL_CHANGE,
 	PANEL_DESTROY,
+	GR_BLOCK,
+	GR_WALL,
+	GR_FIELD,
 	FONT_MSG,
 
 };
@@ -48,6 +51,9 @@ bool GameMain::init()
 		resdata[PANEL_CHANGE] = mng->Regist("data/panel_change01.ogg", snd_loader);
 		resdata[PANEL_DESTROY] = mng->Regist("data/block_destroy.ogg", snd_loader);
 		resdata[FONT_MSG] = mng->Regist("MS Gothic2", font_loader);
+		resdata[GR_WALL] = mng->Regist("data/wall.png", gr_loader);
+		resdata[GR_BLOCK] = mng->Regist("data/wall.png", gr_loader);
+		resdata[GR_FIELD] = mng->Regist("data/field.png", gr_loader);
 
 		draw_ = std::make_shared<draw_game>();
 		field_ = std::make_shared<field>(7, 7);

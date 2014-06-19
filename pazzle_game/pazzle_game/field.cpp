@@ -10,9 +10,16 @@ using namespace util;
 
 auto rnd = util::random_manager::getInstance();
 
+enum
+{
+	BLOCK_DESTROY
+};
+
 field::field(int x, int y) : field_size_(x + 2, y + 2), data_((x + 4) * (y + 4)), flags_((x + 4) * (y + 4))
 , connectnum((x + 4) * (y + 4))
-{}
+{
+	resdata[BLOCK_DESTROY] = res::Resource_mng::get_Instance()->Get_RegistedResource("data/block_destroy.ogg");
+}
 
 void field::initialize()
 {
@@ -381,9 +388,7 @@ void field::block_update()
 	}
 	if (erased)
 	{
-	
-		auto t = res::Resource_mng::get_Instance()->Get_RegistedResource("data/block_destroy.ogg");
-		PlaySoundMem(*t, DX_PLAYTYPE_BACK);
+		PlaySoundMem(*resdata[BLOCK_DESTROY], DX_PLAYTYPE_BACK);
 	}
 	create_num = 0;
 }

@@ -20,6 +20,7 @@ resource_sh Resource_mng::Get_RegistedResource(const char* resource_name)
 	{
 		std::string err = "Not Found Resource:";
 		err += resource_name;
+		OutputDebugStringA(err.c_str());
 		throw std::runtime_error(err);
 	}
 }

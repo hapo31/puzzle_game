@@ -1,4 +1,5 @@
 #include"Level_Manager.h"
+#include"WindowSize.h"
 #include"resource_manager.h"
 
 using namespace level;
@@ -47,7 +48,7 @@ level_t Level_Manager::execute()
 		else
 		{
 			SetDrawBright(255, 255, 255);
-			DrawString(0, 0, "Now Loading...", GetColor(255, 255, 0));
+			DrawString((frame * 10 ) % WindowWidth, 0, "Now Loading...", GetColor(255, 255, 0));
 		}
 		break;
 		//é¿çs

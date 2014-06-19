@@ -15,11 +15,12 @@ const int block_size = 64;
 //ÉJÅ[É\ÉãògÇÃëæÇ≥
 const int frame_tickness = 3;
 //ÉuÉçÉbÉNê¸ÇÃëæÇ≥
-const int blockline_tickness = 5;
+const int blockline_tickness = 3;
 
 enum RES
 {
 	BLOCK,
+	WALL,
 	FIELD,
 	FONT
 };
@@ -27,16 +28,11 @@ enum RES
 draw_game::draw_game() : block_size_(block_size, block_size)
 {
 	auto resmn = Resource_mng::get_Instance();
-	auto font_loader = res::get_loader<font_controler>();
-	auto gr_control = get_loader<graphic_controler>();
 
-	this->res[RES::BLOCK] = resmn->Regist("data/block.png", gr_control);
-	this->res[RES::FIELD] = resmn->Regist("data/field.png", gr_control);
-	for (auto& r : res)
-	{
-		if (r && r->is_Enable())
-			r->Load();
-	}
+	res[RES::BLOCK] = resmn->Get_RegistedResource("data/wall.png");
+	res[RES::WALL] = resmn->Get_RegistedResource("data/wall.png");
+	res[RES::FIELD] = resmn->Get_RegistedResource("data/field.png");
+	res[RES::FONT] = resmn->Get_RegistedResource("MS Gothic2");
 }
 
 void draw_game::draw_Field(int x, int y, const field& object) const
@@ -44,17 +40,17 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 	typedef enum GameObject::field::ERASE_CHK FLAG;
 	auto field_size = object.get_size();
 	//îwåiï`âÊ
-	DrawBox(x - frame_tickness, y - frame_tickness, x + (frame_tickness + block_size_.x) * field_size.x, y + (frame_tickness + block_size_.y) * field_size.y, GetColor(50, 50, 150), true);
+	//DrawBox(x - frame_tickness, y - frame_tickness, x + (frame_tickness + block_size_.x) * field_size.x, y + (frame_tickness + block_size_.y) * field_size.y, GetColor(50, 50, 150), true);
+	DrawGraph(x + block_size_.x, y + block_size_.y, *res[RES::FIELD], true);
 	for (int i = 0; i < field_size.y; ++i)
 	{
 		for (int j = 0; j < field_size.x; ++j)
 		{
-			
 			switch (object.get_flag(j, i))
 			{
 			case FLAG::WALLCONNECT:
 				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+				DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 				DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
 					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,
@@ -62,7 +58,7 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 					);
 				break;
 			case FLAG::ERASING:
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, object.get_block_const(j, i).get_eraseframe());
+				DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, object.get_block_const(j, i).get_eraseframe());
 				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
 				DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
@@ -74,13 +70,13 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i));
 				break;
 			}
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
-	DrawFormatString
+	DrawFormatStringToHandle
 		((x + (block_size_.x + frame_tickness) * field_size.x) / 2,
 		y + (block_size_.y + frame_tickness) * field_size.y + 5,
-		GetColor(0, 0, 0), "%d", object.get_score()
+		GetColor(0, 0, 0), *res[FONT], "%d", object.get_score()
 		);
 }
 
@@ -134,7 +130,7 @@ inline int BLINK_(int timer, int base, double spd) { return abs((int) (timer*spd
 void draw_game::draw_coursor(int x, int y, const cursor& object) const
 {
 	auto rect = object.get_rect();
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BLINK_(frame, 150, 3) + 55);
+	DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, BLINK_(frame, 150, 3) + 55);
 	for (int i = rect.top; i < rect.bottom; ++i)
 	{
 		for (int j = rect.left; j < rect.right; ++j)
@@ -142,7 +138,7 @@ void draw_game::draw_coursor(int x, int y, const cursor& object) const
 			DrawBox(x + j * (block_size + frame_tickness), y + i * (block_size + frame_tickness), x + (j + 1) * (block_size + frame_tickness) - frame_tickness, y + (i + 1) * (block_size + frame_tickness) - frame_tickness, CursorColor, true);
 		}
 	}
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void draw_game::draw_Block(int x, int y, const block& object) const
@@ -154,14 +150,17 @@ void draw_game::draw_Block(int x, int y, const block& object) const
 	switch (object.get_block_type())
 	{
 	case BLOCK_TYPE::BLANK:
-		DrawBox(x, y, x + block_size_.x, y + block_size_.y, BlockDefaultColor, true);
+		//DrawGraph(x, y, *res[RES::WALL], true);
+		//DrawBox(x, y, x + block_size_.x, y + block_size_.y, BlockDefaultColor, true);
 		break;
 	case BLOCK_TYPE::WALL:
-		DrawBox(x, y, x + block_size_.x, y + block_size_.y, GetColor(128, 128, 128), true);
+		DrawGraph(x, y, *res[RES::WALL], true);
+		//DrawBox(x, y, x + block_size_.x, y + block_size_.y, GetColor(128, 128, 128), true);
 		break;
 	case BLOCK_TYPE::BLOCK:
 		//âºÇ≈DrawBox
-		DrawBox(x, y, x + block_size_.x, y + block_size_.y, BlockDefaultColor, true);
+		//DrawBox(x, y, x + block_size_.x, y + block_size_.y, BlockDefaultColor, true);
+		//DrawGraph(x, y, *res[RES::BLOCK], true);
 		//ê¸ÇÃï˚å¸Ç…LineÇï`âÊÇ∑ÇÈ
 		if (cn & DIR::UP)
 		{
