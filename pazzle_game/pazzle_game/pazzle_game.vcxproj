@@ -88,6 +88,7 @@
     <ClInclude Include="draw_system.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="DxLibControl.h" />
+    <ClInclude Include="fade_manager.h" />
     <ClInclude Include="field.h" />
     <ClInclude Include="fixed_point.h" />
     <ClInclude Include="Level.h" />

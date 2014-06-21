@@ -14,6 +14,11 @@ namespace level
 	{
 		std::unordered_map<int, level_t> levels;
 		std::list <level_t> level_stack;
+
+		int draw_bright = 255;
+		int fade_frame = 0;
+		bool fade_flag = false;
+
 		int next_id = 0;
 		Level_Manager() = default;
 		Level_Manager(const Level_Manager&) = delete;
@@ -26,6 +31,10 @@ namespace level
 			static Level_Manager obj;
 			return &obj;
 		}
+		//フェードアウトの設定
+		int set_fadeout(int frame);
+		//フェードインの設定
+		int set_fadein(int frame);
 
 		//次のLevelへ遷移
 		//遷移が発生していればtrue

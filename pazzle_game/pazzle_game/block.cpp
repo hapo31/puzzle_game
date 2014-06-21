@@ -31,7 +31,7 @@ void block::rota(int dir)
 block block::block_new(int ThreeLineProb, int FourLineProb)
 {
 	int lines[] = { RIGHT, UP, LEFT, DOWN };
-	int rnd = ::rnd->get_rand() % 4;
+	
 	int line = 0;
 	int prob = ::rnd->get_rand();
 	if (FourLineProb > 0 && prob % FourLineProb == 0)
@@ -40,14 +40,13 @@ block block::block_new(int ThreeLineProb, int FourLineProb)
 	}
 	else if (ThreeLineProb > 0 && prob % ThreeLineProb == 0)
 	{
-		line = ~lines[rnd];
+		line = ~lines[rnd->get_rand() % 4];
 	}
 	else
 	{
-		int max = ::rnd->get_rand() % 3;
-		int rnd2 = (rnd + max) % 4;
-		rnd2 = rnd2 == rnd ? (rnd2 + 1) % 4 : rnd2;
-		line = lines[rnd] | lines[rnd2];
+		int line1 = rnd->get_rand() % 2;
+		int line2 = rnd->get_rand() % 2 + 2;
+		line = lines[line1] | lines[line2];
 	}
 	block b(line);
 	return b;

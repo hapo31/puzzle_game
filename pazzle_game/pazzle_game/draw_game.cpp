@@ -43,7 +43,7 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 	auto field_size = object.get_size();
 	//”wŒi•`‰æ
 	//DrawBox(x - frame_tickness, y - frame_tickness, x + (frame_tickness + block_size_.x) * field_size.x, y + (frame_tickness + block_size_.y) * field_size.y, GetColor(50, 50, 150), true);
-	DrawGraph(x + block_size_.x, y + block_size_.y, *res[RES::FIELD], true);
+	DrawGraph(x - frame_tickness, y - frame_tickness, *res[RES::FIELD], true);
 	for (int i = 0; i < field_size.y; ++i)
 	{
 		for (int j = 0; j < field_size.x; ++j)
@@ -71,7 +71,7 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 				draw_Block(x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness), object.get_block_const(j, i), true);
 				if (object.get_block_const(j, i).get_block_type() != GameObject::WALL)
 				{
-					util::scoped_dx_blendmode d(DX_BLENDMODE_ALPHA, 255 - object.get_block_const(j, i).get_eraseframe());
+					util::scoped_dx_blendmode d(DX_BLENDMODE_ALPHA, 255 - object.get_block_const(j, i).get_eraseframe() / 2);
 					DrawBox(
 					x + j * (block_size_.x + frame_tickness), y + i * (block_size_.y + frame_tickness),
 					x + (j + 1) * (block_size_.x + frame_tickness) - frame_tickness, y + (i + 1) * (block_size_.y + frame_tickness) - frame_tickness,

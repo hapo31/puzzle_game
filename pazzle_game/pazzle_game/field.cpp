@@ -36,9 +36,9 @@ void field::initialize()
 			}
 			else
 			{
-				data_[corrent] = block::block_new(10, 0);
 				// ƒuƒƒbƒN‚ğ‰Šú‰»‚·‚é
 				data_[corrent].erase();
+				data_[corrent] = block::block_new(10, 0);
 			}
 
 		}

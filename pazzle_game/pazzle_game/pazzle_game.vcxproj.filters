@@ -130,6 +130,9 @@
     <ClInclude Include="Scoped_DxBlendMode.h">
       <Filter>utility\header</Filter>
     </ClInclude>
+    <ClInclude Include="fade_manager.h">
+      <Filter>Level\header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="field.cpp">
