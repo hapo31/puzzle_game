@@ -121,6 +121,10 @@ void draw_game::draw_Flags(int x, int y, const field& object) const
 				str = "Wc";
 				color = GetColor(0, 255, 255);
 				break;
+			case FLAG::WALL_COOL_DOWN:
+				str = "Cd";
+				color = GetColor(255, 0, 255);
+				break;
 			default:
 				str = "No";
 				break;

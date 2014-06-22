@@ -143,13 +143,13 @@ int field::fall_block(int x, int y, int n)
 	}
 }
 
-std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
+void field::block_erase_check(bool erase_flag)
 {
 	//flags初期化
 	//for (auto& it : flags_) if (it != ERASING && it != ERASE) it = NOP;
 
 	//tmpを初期化
-	flags_tmp.assign(flags_tmp.size(), NOP);
+	flags_tmp.assign(flags_.begin(), flags_.end());
 
 	for (auto& it : connectnum) it = 0;
 
@@ -159,24 +159,24 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 		{
 			int corrent = get_memorypos(j, i);
 			//壁から調べる
-			if (data_[corrent].get_block_type() == WALL)
+			if (data_[corrent].get_block_type() == WALL && flags_[corrent] != WALL_COOL_DOWN)
 			{
 				int right = corrent + 1;
 				int left = corrent - 1;
 				int up = corrent - field_size_.x;
 				int down = corrent + field_size_.x;
 				auto flag_tmp = flags_[corrent];
+
 				if (down < (int) data_.size() && (data_[down] & UP))
 				{
 					//新ブロックなら繋がらなくなるまで回す
-				
 					while (data_[down].is_new() && data_[down] & UP) data_[down].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j, i + 1, corrent, flags_tmp)) != 0)
 						flags_tmp[corrent] = ERASE;
 					else
 						flags_tmp[corrent] = NOP;
 				}
-				if (right < (int) data_.size() &&  (data_[right] & LEFT))
+				if (right < (int) data_.size() && (data_[right] & LEFT))
 				{
 					while (data_[right].is_new() && data_[right] & LEFT) data_[right].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j + 1, i, corrent, flags_tmp)) != 0)
@@ -192,7 +192,7 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 					else
 						flags_tmp[corrent] = NOP;
 				}
-				if (up >= 0 &&  (data_[up] & DOWN))
+				if (up >= 0 && (data_[up] & DOWN))
 				{
 					while (data_[up].is_new() && data_[up] & DOWN) data_[up].rota(0);
 					if ((connectnum[corrent] = block_erase_impl(j, i - 1, corrent, flags_tmp)) != 0)
@@ -224,7 +224,6 @@ std::vector<field::ERASE_CHK> field::block_erase_check(bool erase_flag)
 			++it2;
 		}
 	}
-	return flags_;
 }
 
 void field::update()
@@ -245,10 +244,10 @@ int field::block_erase_impl(int x, int y, int bef_pos, std::vector<ERASE_CHK>& f
 	//ERASE_CHK flag_tmp = flags_[corrent];
 
 	//壁の場合はそこで探索終了
-	if (data_[corrent].get_block_type() == WALL)
+	if (data_[corrent].get_block_type() == WALL )
 	{
 		//最低消去数以上ならその時点での接続数を返す
-		if (erase_num > erase_min)
+		if (erase_num > erase_min && flags_[corrent] != WALL_COOL_DOWN)
 		{
 			flags_[corrent] = ERASE;
 			return connectnum[corrent] = erase_num;
@@ -394,10 +393,23 @@ void field::block_update()
 						//仮のスコア処理
 						score_ += connectnum[i] * 30;
 						data_[i].erase();
+						//壁で無ければ破壊音フラグを立てる
+						erased = true;
+						flags_[i] = NOP;
 					}
-					//壁で無ければ破壊音フラグを立てる
-					erased = data_[i].get_block_type() != WALL;
+					//壁ならクールダウンタイムに入る
+					else
+					{
+						flags_[i] = WALL_COOL_DOWN;
+						data_[i].set_eraseframe(erase_frame);
+					}
+				}
+				break;
+			case WALL_COOL_DOWN:
+				if (!data_[i].decrement_eraseframe())
+				{
 					flags_[i] = NOP;
+					data_[i].set_eraseframe(erase_frame);
 				}
 				break;
 			}

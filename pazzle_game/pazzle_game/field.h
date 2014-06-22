@@ -17,6 +17,7 @@ namespace GameObject
 			ERASE,		//消すのが確定
 			ERASING,	//消去中
 			WALLCONNECT,//壁と接続している 
+			WALL_COOL_DOWN,	// 壁のクールダウン中
 		};
 	private:
 		//ブロックデータ
@@ -61,7 +62,7 @@ namespace GameObject
 		//ブロックの更新(ブロックのerase_frameの更新)
 		void block_update();
 		//ブロックの接続チェック
-		std::vector<ERASE_CHK> block_erase_check(bool erase_flag = true);
+		void block_erase_check(bool erase_flag = true);
 
 		//data_やflagsのメモリ位置を取得
 		int get_memorypos(int x, int y) const { return y * field_size_.x + x; }
