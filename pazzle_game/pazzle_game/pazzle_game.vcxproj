@@ -96,7 +96,7 @@
     <ClInclude Include="IResourceControl.h" />
     <ClInclude Include="Level_Manager.h" />
     <ClInclude Include="GameMain.h" />
-    <ClInclude Include="object_translater.h" />
+    <ClInclude Include="translater.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="random_manager.h" />
     <ClInclude Include="resource.h" />

@@ -28,7 +28,7 @@ namespace level
 		{
 			if (frames < fade_frame)
 			{
-				int bright = updater(before_bright_, after_bright_, frame);
+				int bright = updater(frame);
 				SetDrawBright(bright, bright, bright);
 				++frames;
 				return false;

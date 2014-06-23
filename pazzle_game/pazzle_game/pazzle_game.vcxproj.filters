@@ -97,9 +97,6 @@
     <ClInclude Include="random_manager.h">
       <Filter>utility\header</Filter>
     </ClInclude>
-    <ClInclude Include="object_translater.h">
-      <Filter>utility\header</Filter>
-    </ClInclude>
     <ClInclude Include="fixed_point.h">
       <Filter>utility\header</Filter>
     </ClInclude>
@@ -132,6 +129,9 @@
     </ClInclude>
     <ClInclude Include="fade_manager.h">
       <Filter>Level\header</Filter>
+    </ClInclude>
+    <ClInclude Include="translater.h">
+      <Filter>utility\header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
