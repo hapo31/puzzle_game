@@ -2,6 +2,7 @@
 #include<list>
 #include<unordered_map>
 #include<memory>
+#include"fade_manager.h"
 
 #include"Level.h"
 
@@ -14,10 +15,7 @@ namespace level
 	{
 		std::unordered_map<int, level_t> levels;
 		std::list <level_t> level_stack;
-
-		int draw_bright = 255;
-		int fade_frame = 0;
-		bool fade_flag = false;
+		fade_updater fade;
 
 		int next_id = 0;
 		Level_Manager() = default;
@@ -32,10 +30,11 @@ namespace level
 			return &obj;
 		}
 		//フェードアウトの設定
-		int set_fadeout(int frame);
+		void set_fadeout(int frame);
 		//フェードインの設定
-		int set_fadein(int frame);
-
+		void set_fadein(int frame);
+		//フェード処理が終わっているか
+		inline bool get_fadeend() { return fade.is_end(); }
 		//次のLevelへ遷移
 		//遷移が発生していればtrue
 		bool set_next_level( int id);

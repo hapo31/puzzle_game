@@ -9,6 +9,15 @@ bool Level_Manager::regist_level(int id, level_t level)
 	return levels.emplace(id, level).second;
 }
 
+void Level_Manager::set_fadein(int frame)
+{
+	fade.set(fade_type::in, frame);
+}
+
+void Level_Manager::set_fadeout(int frame)
+{
+	fade.set(fade_type::out, frame);
+}
 
 bool Level_Manager::set_next_level(int id)
 {
@@ -28,6 +37,8 @@ bool Level_Manager::set_next_level(int id)
 
 level_t Level_Manager::execute()
 {
+	//‰æ–Ê‚Ì‚ ‚©‚é‚³ŠÇ—
+	fade.update();
 	switch (state)
 	{
 		//‰Šú‰»
@@ -38,7 +49,7 @@ level_t Level_Manager::execute()
 			state = EXE;
 #ifdef _DEBUG
 			{
-				char buf[256];
+				char buf[255];
 				sprintf_s<sizeof buf>(buf, "Init Success ID:%d\n", level_stack.front()->get_myid());
 				OutputDebugStringA(buf);
 			}

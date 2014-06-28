@@ -1,27 +1,36 @@
 #pragma once
+#include<boost/optional.hpp>
 
 namespace util
 {
 	template<class Value_Type>
 	class translater
 	{
-		Value_Type now;
-		Value_Type start_;
-		Value_Type end_;
+		//現在の値
+		boost::optional<Value_Type> now;
+		//初期値
+		boost::optional<Value_Type> start_;
+		//終了値
+		boost::optional<Value_Type> end_;
+		//現在のフレーム数
 		int now_time = 0;
+		//動作フレーム数
 		int frame_ = 0;
 
 	public:
-		enum { IS_END = INT_MAX };
-		using value_type = Value_Type;
+		using optional_value_type = boost::optional<Value_Type>;
 
 		translater(Value_Type&& start, Value_Type&& end, int frame) : start_(std::move(start)), end_(std::move(end)), frame_(frame) {}
-		template<class Callable >
-		double next(Callable f)
+		template<class Callable>
+		optional_value_type& next(Callable f)
 		{
-			return  ++now_time <= frame_ ? (now = start_ + f(frame_, now_time, end_)) : IS_END;
+			if (++now_time <= frame_)
+				now = *start_ + f(frame_, now_time, *end_);
+			else
+				now = boost::none;
+			return now;
 		}
-		double get_now() const { return now; }
+		optional_value_type& get_now() { return now; }
 
 	};
 }

@@ -1,43 +1,51 @@
 #pragma once
+#include"translater.h"
+#include<DxLib.h>
 
 namespace level
 {
 	//フェードイン、フェードアウトの管理
-	template<class Bright_Updater>
 	class fade_updater
 	{
-		//現在のフレーム数
-		int frames = 0;
-		//フェードにかけるフレーム数
-		int fade_frame = 0;
-		int before_bright_ = 255;
-		int after_bright_ = 255;
-		Bright_Updater updater;
+		using value_type = double;
+		util::translater<value_type> updater;
+		int frame_ = 10;
 	public:
-		fade_updater() = default;
-		fade_updater(int before_bright, int after_bright, int frame) : before_bright_(before_bright), after_bright_(after_bright), frames(frame) {}
-		//before_brightからafter_brightへframeかけて明るさを変える
-		void set_fade(int before_bright, int after_bright, int frame)
+		enum type { in, out };
+		fade_updater() : updater(255, 255, 1) {};
+		explicit fade_updater(type t) : updater(t ? 255 : 0, t ? 0 : 255, frame_){}
+		fade_updater(type t, int frames) : frame_(frames), updater(t ? 255 : 0, t ? 0 : 255, frame_){}
+		void set(type t, int frame)
 		{
-			fade_frame = frame;
-			before_bright_ = before_bright;
-			after_bright_ = after_bright;
+			updater = util::translater<value_type>(t == out ? 255 : 0, t == out ? 0 : 255, frame);
 		}
-		//明るさのアップデート　終わっていればtrue
+		void set(type t)
+		{
+			set(t, frame_);
+		}
 		bool update()
 		{
-			if (frames < fade_frame)
+			//線形
+			if (updater.next([&](int frame, int now, value_type end) -> value_type
 			{
-				int bright = updater(frame);
-				SetDrawBright(bright, bright, bright);
-				++frames;
-				return false;
+				return (now / (float) frame) * end;
+			}) == boost::none)
+			{
+				//フェードイン、アウトが終わったらtrue
+				return true;
 			}
 			else
 			{
-				frames = 0;
-				return true;
+				//終わっていなければ更新
+				auto n = updater.get_now();
+				SetDrawBright((int) *n, (int) *n, (int) *n);
+				return false;
 			}
 		}
+		bool is_end() 
+		{
+			return !updater.get_now();
+		}
 	};
+	typedef enum fade_updater::type fade_type;
 }

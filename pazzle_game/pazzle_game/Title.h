@@ -20,7 +20,6 @@ namespace level
 		res::font_controler::font_info *info = nullptr;
 		bool loading = false;
 		bool end_flag = false;
-		int bright = 0;
 		
 	public:
 		Title();

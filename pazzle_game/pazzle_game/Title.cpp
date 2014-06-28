@@ -23,18 +23,18 @@ Title::Title()
 
 bool Title::init()
 {
-	SetDrawBright(0, 0, 0);
 	if (!loading)
 	{
 		auto gr_loader = get_loader<graphic_controler>();
 		auto font_loader = get_loader<font_controler>();
 		auto mng = res::Resource_mng::get_Instance();
 
+
 		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_8X8);
 		resdata[0] = mng->Regist("data/title.png", gr_loader);
 		resdata[1] = mng->Regist("MS Gothic", font_loader);
 		loading = true;
-		bright = 0;
+
 		resdata[0]->Load();
 		for (auto& it : resdata)
 			it->Load();
@@ -45,6 +45,9 @@ bool Title::init()
 		if (resdata[0]->is_Loaded() ||
 			resdata[1]->is_Loaded())
 		{
+
+			//読み込みが終わっていればフェードインを設定
+			level_mng->set_fadein(30);
 			loading = false;
 			return true;
 		}
@@ -57,16 +60,8 @@ bool Title::init()
 
 int Title::execute()
 {
-	if (bright < 255 && !end_flag)
-	{
-		bright += 5;
-	}
-	else if (bright > 0 && end_flag)
-	{
-		bright -= 5;
-	}
-	SetDrawBright(bright, bright, bright);
-	if (!end_flag)
+	//フェードアウト処理が終わっていれば入力処理をする
+	if (level_mng->get_fadeend() && !end_flag)
 	{
 		if (ctrl1->at(input::UP) == 1)
 		{
@@ -82,6 +77,7 @@ int Title::execute()
 			{
 			case START:
 				level_mng->set_next_level(level::GAME_MAIN);
+				level_mng->set_fadeout(30);
 				end_flag = true;
 				break;
 			case EXIT:
@@ -105,12 +101,12 @@ int Title::execute()
 			++i;
 		}
 	}
-	return bright;
+	return 0;
 }
 
 bool Title::end()
 {
-	if (execute() <= 0)
+	if (level_mng->get_fadeend())
 	{
 		for (auto& it : resdata)
 			it->Delete();
@@ -120,6 +116,7 @@ bool Title::end()
 	}
 	else
 	{
+		execute();
 		return false;
 	}
 }

@@ -4,7 +4,6 @@ using namespace res;
 
 resource_sh Resource_mng::Regist(const char* filename, Loader file_loader, bool cache)
 {
-	//TODO ここがポインタではなくコピーになっているので渡した先で変化があってもマネージャ側のハンドルが更新されない
 	auto t = res_map.emplace(filename, std::make_tuple(make_resource(filename, file_loader), cache));
 	return get_resource(t.first->second);
 }
