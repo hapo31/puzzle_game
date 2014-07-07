@@ -23,11 +23,11 @@ namespace level
 		
 	public:
 		Title();
-		virtual int execute() override;
+		virtual int execute(int Message) override;
 		virtual int get_myid() const override{ return id; }
 	
-		virtual bool init() override;
-		virtual bool end() override;
+		virtual bool init(int Message) override;
+		virtual bool end(int Message) override;
 
 	};
 }

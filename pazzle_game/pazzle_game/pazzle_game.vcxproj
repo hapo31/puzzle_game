@@ -110,6 +110,7 @@
     <ClCompile Include="block.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="draw_game.cpp" />
+    <ClCompile Include="fade_manager.cpp" />
     <ClCompile Include="field.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="Level_Manager.cpp" />

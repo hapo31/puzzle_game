@@ -2,50 +2,37 @@
 #include"translater.h"
 #include<DxLib.h>
 
-namespace level
+namespace logic
 {
 	//フェードイン、フェードアウトの管理
 	class fade_updater
 	{
-		using value_type = double;
-		util::translater<value_type> updater;
-		int frame_ = 10;
 	public:
 		enum type { in, out };
+	private:
+		using value_type = double;
+		util::translater<value_type> updater;
+		type ty;
+		int frame_ = 10;
+	public:
 		fade_updater() : updater(255, 255, 1) {};
-		explicit fade_updater(type t) : updater(t ? 255 : 0, t ? 0 : 255, frame_){}
-		fade_updater(type t, int frames) : frame_(frames), updater(t ? 255 : 0, t ? 0 : 255, frame_){}
+		explicit fade_updater(type t) : ty(t), updater(t ? 255 : 0, t ? 0 : 255, frame_){}
+		fade_updater(type t, int frames) : frame_(frames), ty(t), updater(t ? 255 : 0, t ? 0 : 255, frame_){}
 		void set(type t, int frame)
 		{
-			updater = util::translater<value_type>(t == out ? 255 : 0, t == out ? 0 : 255, frame);
+			value_type start = t == out ? 255 : 0;
+			value_type end = t == out ? 0 : 255;
+			frame_ = frame;
+			ty = t;
+			updater = util::translater<value_type>(std::move(start), std::move(end), frame);
 		}
 		void set(type t)
 		{
 			set(t, frame_);
 		}
-		bool update()
-		{
-			//線形
-			if (updater.next([&](int frame, int now, value_type end) -> value_type
-			{
-				return (now / (float) frame) * end;
-			}) == boost::none)
-			{
-				//フェードイン、アウトが終わったらtrue
-				return true;
-			}
-			else
-			{
-				//終わっていなければ更新
-				auto n = updater.get_now();
-				SetDrawBright((int) *n, (int) *n, (int) *n);
-				return false;
-			}
-		}
-		bool is_end() 
-		{
-			return !updater.get_now();
-		}
+		bool update();
+		bool is_end() { return !updater.get_now();}
+		int get_bright() { return updater.get_now() ? (int)*updater.get_now() : -1; }
 	};
 	typedef enum fade_updater::type fade_type;
 }

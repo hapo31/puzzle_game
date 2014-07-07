@@ -15,7 +15,7 @@ namespace level
 	{
 		std::unordered_map<int, level_t> levels;
 		std::list <level_t> level_stack;
-		fade_updater fade;
+		logic::fade_updater fade;
 
 		int next_id = 0;
 		Level_Manager() = default;
@@ -34,7 +34,9 @@ namespace level
 		//フェードインの設定
 		void set_fadein(int frame);
 		//フェード処理が終わっているか
-		inline bool get_fadeend() { return fade.is_end(); }
+		inline bool fadeend() { return fade.is_end(); }
+
+		int get_bright() { return fade.get_bright(); }
 		//次のLevelへ遷移
 		//遷移が発生していればtrue
 		bool set_next_level( int id);

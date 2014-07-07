@@ -21,7 +21,7 @@ Title::Title()
 	menu[2] = std::make_pair( "Exit" ,LEVEL_ID::EXIT);
 }
 
-bool Title::init()
+bool Title::init(int )
 {
 	if (!loading)
 	{
@@ -58,10 +58,10 @@ bool Title::init()
 	}
 }
 
-int Title::execute()
+int Title::execute(int )
 {
 	//フェードアウト処理が終わっていれば入力処理をする
-	if (level_mng->get_fadeend() && !end_flag)
+	if (!end_flag && level_mng->fadeend())
 	{
 		if (ctrl1->at(input::UP) == 1)
 		{
@@ -104,9 +104,9 @@ int Title::execute()
 	return 0;
 }
 
-bool Title::end()
+bool Title::end(int msg)
 {
-	if (level_mng->get_fadeend())
+	if (level_mng->fadeend())
 	{
 		for (auto& it : resdata)
 			it->Delete();
@@ -116,7 +116,7 @@ bool Title::end()
 	}
 	else
 	{
-		execute();
+		execute(msg);
 		return false;
 	}
 }

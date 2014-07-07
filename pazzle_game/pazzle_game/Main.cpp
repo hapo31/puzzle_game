@@ -14,7 +14,7 @@
 #include"GameMain.h"
 
 #include"WindowSize.h"
-
+/*
 #include<Effekseer.h>
 #include<EffekseerRendererDX9.h>
 
@@ -25,7 +25,7 @@
 	#pragma comment(lib, "Effekseer.Release.lib")
 	#pragma comment(lib, "EffekseerRendererDX9.Release.lib")
 #endif
-
+*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	SetGraphMode(WindowWidth, WindowHeight, 32);

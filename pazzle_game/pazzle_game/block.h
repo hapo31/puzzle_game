@@ -1,5 +1,7 @@
 #pragma once
 #include<utility>
+#include"translater.h"
+#include"Position.h"
 
 namespace GameObject
 {
@@ -24,10 +26,13 @@ namespace GameObject
 		int erase_frame = 0xffff;
 		BLOCK_TYPE mytype_ = BLANK;
 		bool is_new_;
+		//座標値
+		util::pos<int> pos;
+		util::translater<double> block_control;
 	public:
-		block() : connect_dir_(0), mytype_(BLANK), is_new_(false) {};
-		explicit block(int dir) : connect_dir_(dir), mytype_(dir != 0 ? BLOCK : BLANK), is_new_(true) {}
-		explicit block(BLOCK_TYPE type) : mytype_(type), is_new_(type != WALL ? false : true) {}
+		block() : connect_dir_(0), mytype_(BLANK), is_new_(false), pos(0, 0) {};
+		explicit block(int dir, const util::pos<int>& pos_) : connect_dir_(dir), mytype_(dir != 0 ? BLOCK : BLANK), pos(pos) ,is_new_(true) {}
+		explicit block(BLOCK_TYPE type, const util::pos<int>& pos_) : mytype_(type), pos(pos_), is_new_(type != WALL ? false : true) {}
 		block(block&& object)
 		{
 			*this = std::move(object);
@@ -74,16 +79,16 @@ namespace GameObject
 			else
 				return false;
 		}
-
+		util::pos<int> get_pos() const { return pos; }
 		bool operator==(BLOCK_TYPE type) const { return mytype_ == type; }
 		bool operator&(int dir) const { return (connect_dir_ & dir) != 0; }
 		BLOCK_TYPE get_block_type() const { return  mytype_; }
 		int get_connect_dir() const { return connect_dir_; }
 		void set_connect_dir(int dir){ connect_dir_ = dir; mytype_ = dir != 0 ? BLOCK : BLANK; }
-		
+}
 		//ブロックを生成する 3方向と4方向の生成確率を指定できる
-		static block block_new(int ThreeLineProb, int FourlineProb);
+		static block block_new(int ThreeLineProb, int FourlineProb, util::pos<int>& pos);
 		//向き指定で生成
-		static block block_new(int dir);
+		static block block_new(int dir, util::pos<int>& pos);
 	};
 }

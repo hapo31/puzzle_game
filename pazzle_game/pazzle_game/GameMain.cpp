@@ -35,7 +35,7 @@ namespace
 	auto level_mng = level::Level_Manager::get_Instance();
 }
 
-bool GameMain::init() 
+bool GameMain::init(int ) 
 {
 	SetDrawBright(0, 0, 0);
 	if (!loading)
@@ -76,6 +76,7 @@ bool GameMain::init()
 			resdata[FONT_MSG]->is_Loaded())
 	{
 		loading = false;
+		level_mng->set_fadein(30);
 		return true;
 	}
 	else
@@ -84,23 +85,15 @@ bool GameMain::init()
 	}
 }
 
-int GameMain::execute()
+int GameMain::execute(int msg)
 {
 	if (!status->end_flag && CheckHitKey(KEY_INPUT_ESCAPE))
 	{
-		level::Level_Manager::get_Instance()->back_level();
+		level_mng->back_level();
+		level_mng->set_fadeout(30);
 	}
-	if (!status->end_flag && status->bright < 255)
-	{
-		status->bright += 5;
-	}
-	else if (status->end_flag && status->bright > 0)
-	{
-		status->bright -= 5;
-	}
-	SetDrawBright(status->bright, status->bright, status->bright);
 	//ゲームのメイン処理
-	if (!status->end_flag && status->bright >= 255)
+	if (!status->end_flag && level_mng->fadeend())
 	{
 		++status->frames;
 		//カウントダウン表示
@@ -169,6 +162,7 @@ int GameMain::execute()
 			else
 			{
 				level_mng->back_level();
+				level_mng->set_fadeout(30);
 			}
 		}
 	}
@@ -186,13 +180,13 @@ int GameMain::execute()
 		DrawFormatStringToHandle(WindowWidth  - 580, 0, GetColor(0, 0, 0), *resdata[FONT_MSG], "Time: %02d:%02d.%03d", min, sec, mm);
 	}
 	draw_->add_frame();
-	return status->bright;
+	return 0;
 }
 
-bool GameMain::end()
+bool GameMain::end(int msg)
 {
 	status->end_flag = true;
-	if (execute() <= 0)
+	if (level_mng->fadeend())
 	{
 		for (auto& it : resdata)
 		{
@@ -208,7 +202,8 @@ bool GameMain::end()
 	}
 	else
 	{
-		SetVolumeMusicMem(status->bright, *resdata[BGM]);
+		execute(msg);
+		SetVolumeMusicMem(level_mng->get_bright(), *resdata[BGM]);
 		return false;
 	}
 }

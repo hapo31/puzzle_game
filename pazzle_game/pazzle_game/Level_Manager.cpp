@@ -3,6 +3,7 @@
 #include"resource_manager.h"
 
 using namespace level;
+using namespace logic;
 
 bool Level_Manager::regist_level(int id, level_t level)
 {
@@ -43,8 +44,7 @@ level_t Level_Manager::execute()
 	{
 		//‰Šú‰»
 	case INIT:
-		
-		if (level_stack.front()->init())
+		if (level_stack.front()->init(LEVEL_MSG_INIT))
 		{
 			state = EXE;
 #ifdef _DEBUG
@@ -64,7 +64,7 @@ level_t Level_Manager::execute()
 		break;
 		//ŽÀs
 	case EXE:
-		level_stack.front()->execute();
+		level_stack.front()->execute(LEVEL_MSG_NORMAL);
 		break;
 	
 	case END:
@@ -75,7 +75,7 @@ level_t Level_Manager::execute()
 	case NEXT:
 	case END_BACK:
 
-		if (level_stack.empty() || level_stack.front()->end())
+		if (level_stack.empty() || level_stack.front()->end(LEVEL_MSG_END))
 		{
 #ifdef _DEBUG
 			{

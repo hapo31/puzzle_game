@@ -18,7 +18,6 @@ namespace level
 		struct Status
 		{
 			bool end_flag = false;
-			int bright = 0;
 			int frames = 0;
 			int count_down = 3;
 			int cursor_mode = 0;
@@ -32,10 +31,10 @@ namespace level
 		std::array<res::resource_sh, 30> resdata;
 	public:
 		GameMain();
-		virtual int execute() override;
+		virtual int execute(int Message) override;
 		virtual int get_myid() const override{ return id; }
 
-		virtual bool init() override;
-		virtual bool end() override ;
+		virtual bool init(int Message) override;
+		virtual bool end(int Message) override ;
 	};
 }

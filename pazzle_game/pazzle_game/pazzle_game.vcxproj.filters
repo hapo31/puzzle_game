@@ -127,11 +127,11 @@
     <ClInclude Include="Scoped_DxBlendMode.h">
       <Filter>utility\header</Filter>
     </ClInclude>
-    <ClInclude Include="fade_manager.h">
-      <Filter>Level\header</Filter>
-    </ClInclude>
     <ClInclude Include="translater.h">
       <Filter>utility\header</Filter>
+    </ClInclude>
+    <ClInclude Include="fade_manager.h">
+      <Filter>Logic\header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +162,9 @@
     </ClCompile>
     <ClCompile Include="GameMain.cpp">
       <Filter>Level\source</Filter>
+    </ClCompile>
+    <ClCompile Include="fade_manager.cpp">
+      <Filter>Logic\source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
