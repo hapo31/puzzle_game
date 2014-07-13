@@ -30,6 +30,9 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	SetGraphMode(WindowWidth, WindowHeight, 32);
+#ifndef _DEBUG
+	SetOutApplicationLogValidFlag(FALSE);
+#endif
 	SetAlwaysRunFlag(true);
 	res::resource::set_async(true);
 	Dx_Ready::get("puzzle");
