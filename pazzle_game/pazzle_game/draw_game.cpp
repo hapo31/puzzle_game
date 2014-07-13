@@ -41,6 +41,8 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 {
 	typedef enum GameObject::field::ERASE_CHK FLAG;
 	auto field_size = object.get_size();
+	x += offset.x;
+	y += offset.y;
 	//îwåiï`âÊ
 	//DrawBox(x - frame_tickness, y - frame_tickness, x + (frame_tickness + block_size_.x) * field_size.x, y + (frame_tickness + block_size_.y) * field_size.y, GetColor(50, 50, 150), true);
 	DrawGraph(x - frame_tickness, y - frame_tickness, *res[RES::FIELD], true);
@@ -87,8 +89,9 @@ void draw_game::draw_Field(int x, int y, const field& object) const
 			}
 		}
 	}
+	//ÉXÉRÉAÇÃï`âÊ
 	DrawFormatStringToHandle
-		((x + (block_size_.x + frame_tickness) * field_size.x) / 2,
+		(x + ((block_size_.x + frame_tickness) * field_size.x) / 2,
 		y + (block_size_.y + frame_tickness) * field_size.y + 5,
 		GetColor(0, 0, 0), *res[FONT], "%d", object.get_score()
 		);
@@ -98,7 +101,8 @@ void draw_game::draw_Flags(int x, int y, const field& object) const
 {
 	auto field_size = object.get_size();
 	typedef enum GameObject::field::ERASE_CHK FLAG;
-
+	x += offset.x;
+	y += offset.y;
 	for (int i = 0; i < field_size.y; ++i)
 	{
 		for (int j = 0; j < field_size.x; ++j)
@@ -149,6 +153,8 @@ void draw_game::draw_coursor(int x, int y, const cursor& object) const
 {
 	auto rect = object.get_rect();
 	util::scoped_dx_blendmode d(DX_BLENDMODE_ALPHA, BLINK_(frame, 150, 3) + 55);
+	x += offset.x;
+	y += offset.y;
 	for (int i = rect.top; i < rect.bottom; ++i)
 	{
 		for (int j = rect.left; j < rect.right; ++j)

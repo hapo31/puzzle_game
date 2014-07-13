@@ -8,8 +8,7 @@ namespace level
 	enum LEVEL_ID
 	{
 		TITLE,
-		LOADING,
-		CONFIG,
+		VSGAME,
 		GAME_MAIN,
 		EXIT,
 	};

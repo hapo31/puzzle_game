@@ -1,0 +1,40 @@
+#pragma once
+#include"Level_Manager.h"
+#include"resource.h"
+#include"field.h"
+#include"draw_system.h"
+#include"coursor.h"
+
+#include<array>
+#include<memory>
+
+namespace level
+{
+	class VSGame : public ILevel
+	{
+		const LEVEL_ID id = GAME_MAIN;
+		bool loading = false;
+		struct Status
+		{
+			bool end_flag = false;
+			int frames = 0;
+			int end_frames = 0;
+			int count_down = 3;
+			int cursor_mode = 0;
+			double time = 120.0;
+		};
+		std::shared_ptr<draw::draw_game> draw_[2];
+		std::shared_ptr<Status> status[2];
+		std::shared_ptr<GameObject::field> field_[2];
+		std::shared_ptr<GameObject::cursor> cursor_[2];
+
+		std::array<res::resource_sh, 30> resdata;
+	public:
+		VSGame();
+		virtual int execute(int Message) override;
+		virtual int get_myid() const override{ return id; }
+
+		virtual bool init(int Message) override;
+		virtual bool end(int Message) override;
+	};
+}

@@ -20,6 +20,15 @@ void Level_Manager::set_fadeout(int frame)
 	fade.set(fade_type::out, frame);
 }
 
+bool Level_Manager::Initialize()
+{
+	now_loading_gr = res::Resource_mng::get_Instance()->Regist("data/nowloading.png", res::get_loader<res::graphic_controler>() );
+	now_loading_gr->Load();
+	//while (now_loading_gr->is_Loaded());
+
+	return true;
+}
+
 bool Level_Manager::set_next_level(int id)
 {
 	//頭にあった場合はinitだけ実行する
@@ -58,8 +67,16 @@ level_t Level_Manager::execute()
 		//初期化が終わっていなければローディング画面表示
 		else
 		{
+			const double PI = 3.1415926;
+			auto t = *now_loading_gr;
 			SetDrawBright(255, 255, 255);
-			DrawString((frame * 10 ) % WindowWidth, 0, "Now Loading...", GetColor(255, 255, 0));
+			std::string buf = "Now Loading";
+			for (int i = 0; i < frame / 10 % 4; ++i) buf += ".";
+			
+			DrawString(WindowWidth - 220, WindowHeight - 20, buf.c_str(), GetColor(255, 255, 255));
+			SetDrawMode(DX_DRAWMODE_BILINEAR);
+			DrawRotaGraph(WindowWidth - 60, WindowHeight - 60, 1.0, PI * frame / (double)360 , *now_loading_gr, true);
+			SetDrawMode(DX_DRAWMODE_NEAREST);
 		}
 		break;
 		//実行

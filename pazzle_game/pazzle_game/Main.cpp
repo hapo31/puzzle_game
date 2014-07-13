@@ -12,6 +12,7 @@
 
 #include"Title.h"
 #include"GameMain.h"
+#include"VSGame.h"
 
 #include"WindowSize.h"
 /*
@@ -37,9 +38,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto levelmng = level::Level_Manager::get_Instance();
 
 	rnd->set_seed(std::random_device()());
-
-	level::Level_Manager::get_Instance()->regist_level(level::TITLE, level::create_level<level::Title>());
-	level::Level_Manager::get_Instance()->regist_level(level::GAME_MAIN, level::create_level<level::GameMain>());
+	levelmng->Initialize();
+	levelmng->regist_level(level::TITLE, level::create_level<level::Title>());
+	levelmng->regist_level(level::GAME_MAIN, level::create_level<level::GameMain>());
+	levelmng->regist_level(level::VSGAME, level::create_level<level::VSGame>());
 
 	levelmng->set_next_level(level::TITLE);
 	

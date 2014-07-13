@@ -66,7 +66,6 @@ bool GameMain::init(int )
 			if (it && it->is_Enable())
 				it->Load();
 		}
-
 		loading = true;
 		return false;
 	}
@@ -87,6 +86,7 @@ bool GameMain::init(int )
 
 int GameMain::execute(int msg)
 {
+	DrawBox(0, 0, WindowWidth, WindowHeight, GetColor(255, 255, 255), true);
 	if (!status->end_flag && CheckHitKey(KEY_INPUT_ESCAPE))
 	{
 		level_mng->back_level();
@@ -96,25 +96,15 @@ int GameMain::execute(int msg)
 	if (!status->end_flag && level_mng->fadeend())
 	{
 		++status->frames;
-		//カウントダウン表示
-		if (status->frames < 150)
-		{
-
-			DrawFormatStringToHandle(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), *resdata[FONT_MSG], "%d", status->count_down);
-			DrawFormatString(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), "%d", status->count_down);
-			if (status->frames % 60 == 0)
-			{
-				--status->count_down;
-			}
-		}
 		//スタート時の処理
-		else if (status->frames == 150)
+		if (status->frames == 180)
 		{
 			PlaySoundMem(*resdata[BGM], DX_PLAYTYPE_LOOP);
 		}
-		else
+		//ゲームの処理
+		else if (status->frames > 180)
 		{
-			//ゲームの処理
+			
 			if (ctrl1->at(input::UP) == 1)
 			{
 				cursor_->move(cursor::M_DIR::UP);
@@ -166,10 +156,12 @@ int GameMain::execute(int msg)
 			}
 		}
 	}
-	DrawBox(0, 0, WindowWidth, WindowHeight, GetColor(255, 255, 255), true);
+
 	//描画処理
 	draw_->draw_Field(50, 50, *field_);
+#ifdef _DEBUG
 	draw_->draw_Flags(50, 50, *field_);
+#endif
 	draw_->draw_coursor(50, 50, *cursor_);
 	{
 		int min = (int) status->time / 60;
@@ -178,6 +170,16 @@ int GameMain::execute(int msg)
 		int t2 = (int)(status->time * 1000);	//100.55 -> 10055
 		int mm = t2 - t1 * 1000;				// 10055 - 100*100 -> 55 ?
 		DrawFormatStringToHandle(WindowWidth  - 580, 0, GetColor(0, 0, 0), *resdata[FONT_MSG], "Time: %02d:%02d.%03d", min, sec, mm);
+	}
+	//カウントダウン表示
+	if (status->frames < 180)
+	{
+		DrawFormatStringToHandle(WindowWidth / 2, WindowHeight / 3, GetColor(255, 0, 0), *resdata[FONT_MSG], "%d", status->count_down);
+		//DrawFormatString(WindowWidth / 3, WindowHeight / 3, GetColor(0, 255, 0), "%d", status->count_down);
+		if (status->frames != 0 && status->frames % 60 == 0)
+		{
+			--status->count_down;
+		}
 	}
 	draw_->add_frame();
 	return 0;

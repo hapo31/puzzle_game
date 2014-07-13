@@ -15,7 +15,7 @@ namespace draw
 		//描画するブロックのサイズ
 		util::pos<int> block_size_;
 		util::pos<int> field_draw_;
-
+		util::pos<int> offset;
 		std::array<res::resource_sh, 50> res;
 		res::resource background = nullptr;
 		
@@ -30,8 +30,7 @@ namespace draw
 		void add_frame() { ++frame; }
 		void reset_frame() { frame = 0; }
 		void set_frame(int value){ frame = value; }
+		void set_offset(int x, int y) { offset.x = x; offset.y = y; }
+		void move_offset(int addx, int addy){ offset.x += addx; offset.y += addy; }
 	};
-
-	//例えばこんなん
-	class draw_menu;
 }

@@ -31,8 +31,8 @@ namespace logic
 			set(t, frame_);
 		}
 		bool update();
-		bool is_end() { return !updater.get_now();}
-		int get_bright() { return updater.get_now() ? (int)*updater.get_now() : -1; }
+		bool is_end() { return updater.is_end();}
+		int get_bright() { return !updater.is_end() ? (int)*updater.get_now() : -1; }
 	};
 	typedef enum fade_updater::type fade_type;
 }

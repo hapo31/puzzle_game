@@ -38,8 +38,8 @@ namespace res
 
 		resource& operator=(const resource& rvalue)
 		{
-			if (handle.use_count() == 1)
-				Delete();
+			//if (handle.use_count() == 1)
+			//	Delete();
 			loader = rvalue.loader;
 			filename_ = rvalue.filename_;
 			handle = rvalue.handle;
@@ -47,8 +47,8 @@ namespace res
 		}
 		resource& operator=(std::shared_ptr<int>& value)
 		{
-			if (value == nullptr)
-				this->Delete();
+			//if (value == nullptr)
+			//	this->Delete();
 			this->handle = value;
 			return *this;
 		}

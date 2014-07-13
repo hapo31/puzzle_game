@@ -4,6 +4,7 @@
 
 #include"Controler_Manager.h"
 #include"Level.h"
+#include"translater.h"
 
 namespace level
 {
@@ -11,8 +12,17 @@ namespace level
 	{
 		enum MENU
 		{
-			START, CONFIG, EXIT
+			START, VS_START,  EXIT
 		};
+		struct color
+		{
+			int r = 0, g = 0, b = 0;
+			color() = default;
+			color(int r_, int g_, int b_) : r(r_), g(g_), b(b_){}
+			int get_color() const { return GetColor(r, g, b); }
+		};
+		util::translater<color> background_color;
+
 		const LEVEL_ID id = TITLE;
 		int menu_select = 0;
 		std::array<std::pair<std::string,LEVEL_ID>, 3> menu;

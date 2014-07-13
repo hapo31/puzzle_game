@@ -3,6 +3,7 @@
 #include<unordered_map>
 #include<memory>
 #include"fade_manager.h"
+#include"resource.h"
 
 #include"Level.h"
 
@@ -15,8 +16,9 @@ namespace level
 	{
 		std::unordered_map<int, level_t> levels;
 		std::list <level_t> level_stack;
-		logic::fade_updater fade;
 
+		logic::fade_updater fade;
+		res::resource_sh now_loading_gr;
 		int next_id = 0;
 		Level_Manager() = default;
 		Level_Manager(const Level_Manager&) = delete;
@@ -29,6 +31,7 @@ namespace level
 			static Level_Manager obj;
 			return &obj;
 		}
+		bool Initialize();
 		//フェードアウトの設定
 		void set_fadeout(int frame);
 		//フェードインの設定
