@@ -24,6 +24,7 @@ enum RESID
 	GR_BLOCK,
 	GR_WALL,
 	GR_FIELD,
+	GR_BACKGROUND,
 	FONT_MSG,
 
 };
@@ -49,7 +50,7 @@ bool VSGame::init(int)
 		auto font_loader = get_loader<font_controler>();
 		auto mng = res::Resource_mng::get_Instance();
 
-		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_8X8);
+		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 
 		resdata[BGM] = mng->Regist("data/Play01.ogg", snd_loader);
 		resdata[PANEL_CHANGE] = mng->Regist("data/panel_change01.ogg", snd_loader);
@@ -58,6 +59,7 @@ bool VSGame::init(int)
 		resdata[GR_WALL] = mng->Regist("data/wall.png", gr_loader);
 		resdata[GR_BLOCK] = mng->Regist("data/wall.png", gr_loader);
 		resdata[GR_FIELD] = mng->Regist("data/field.png", gr_loader);
+		resdata[GR_BACKGROUND] = mng->Regist("data/background.png", gr_loader);
 
 		draw_[0] = std::make_shared<draw_game>();
 		draw_[1] = std::make_shared<draw_game>();
@@ -83,15 +85,9 @@ bool VSGame::init(int)
 		//ì«Ç›çûÇ›Ç™èIÇÌÇ¡ÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©
 		for (auto& it : resdata)
 		{
-			if (it)
-			{
-				if (!it->is_Loaded())
-					return false;
-			}
-			else
-			{
-				break;
-			}
+			if (!it) continue;
+			if (!it->is_Loaded())
+				return false;
 		}
 
 		loading = false;
@@ -204,7 +200,7 @@ int VSGame::execute(int msg)
 			}
 		}
 	}
-
+	DrawGraph(0, 0, *resdata[GR_BACKGROUND], true);
 	//ï`âÊèàóù
 	for (int i = 0; i < 2; ++i)
 	{

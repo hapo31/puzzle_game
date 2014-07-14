@@ -10,20 +10,23 @@ void block::rota(int dir)
 {
 	if (dir == 0)
 	{
-		//5ビット目を取る
-		bool t = (connect_dir_ & 0x8) != 0;
-		//左にずらして1ビット目にtを挿入
+		//4ビット目を取る
+		int t = (connect_dir_ & 0x8) != 0;
+		//左にずらす
 		connect_dir_ <<= 1;
-		connect_dir_ |= (int)t;
+		//1bit目に挿入
+		connect_dir_ |= (t & 0x1);
+		//4bit分のみ残す
 		connect_dir_ &= 15;
 	}
 	else
 	{
 		//1ビット目を取る
-		bool t = connect_dir_ & 0x1;
+		int t = connect_dir_ & 0x1;
 		//右にずらして4ビット目にtを挿入
 		connect_dir_ >>= 1;
-		connect_dir_ |= (int) (t << 3);
+		connect_dir_ |= t << 3;
+		connect_dir_ &= 15;
 	}
 }
 
@@ -41,6 +44,7 @@ block block::block_new(int ThreeLineProb, int FourLineProb)
 	else if (ThreeLineProb > 0 && prob % ThreeLineProb == 0)
 	{
 		line = ~lines[rnd->get_rand() % 4];
+		line &= 15;
 	}
 	else
 	{

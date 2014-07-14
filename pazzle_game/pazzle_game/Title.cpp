@@ -14,6 +14,12 @@ namespace
 	auto level_mng = level::Level_Manager::get_Instance();
 }
 
+enum
+{
+	GR_TITLE,
+	FONT_MSGOTHIC
+};
+
 Title::Title()
 {
 	menu[0] = std::make_pair( "Normal Mode" ,LEVEL_ID::GAME_MAIN);
@@ -31,14 +37,18 @@ bool Title::init(int )
 
 		background_color = util::translater<color>(std::move(color(240, 248, 255)), std::move(color(240, 248, 255)), 1);
 		background_color.get_now();
-		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_8X8);
-		resdata[0] = mng->Regist("data/title2.png", gr_loader);
-		resdata[1] = mng->Regist("MS Gothic", font_loader);
+		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
+		resdata[GR_TITLE] = mng->Regist("data/title3.png", gr_loader);
+		resdata[FONT_MSGOTHIC] = mng->Regist("MS Gothic", font_loader);
+		//resdata[GR_BACKGROUND] = mng->Regist("data/background.png", gr_loader);
+
 		loading = true;
 
-		resdata[0]->Load();
 		for (auto& it : resdata)
-			it->Load();
+		{
+			if (it)
+				it->Load(); 
+		}
 		return false;
 	}
 	else
@@ -46,6 +56,8 @@ bool Title::init(int )
 		//全てのリソースが読み込み終わっているかをチェック
 		for (auto&& t : resdata)
 		{
+			if (!t) continue;
+			
 			if (!t->is_Loaded())
 			{
 				return false;
@@ -103,7 +115,8 @@ int Title::execute(int )
 	}
 
 	//DrawBox(0, 0, WindowWidth, WindowHeight, background_color.get_now()->get_color(), true);
-	DxLib::DrawGraph(0, 0, *resdata[0], true);
+	//DrawGraph(0, 0, *resdata[GR_BACKGROUND], true);
+	DrawGraph(0, 0, *resdata[GR_TITLE], true);
 	int menu_color[3] = { GetColor(0, 0, 0), GetColor(0, 0, 0), GetColor(0, 0, 0) };
 	background_color.next([&]( int frame, int now, color value ) -> color
 	{
@@ -124,7 +137,7 @@ int Title::execute(int )
 		int i = 0;
 		for (auto & it : menu)
 		{
-			DrawFormatStringToHandle(50, WindowHeight - 550 + i * 60, menu_color[i], *resdata[1] ,"%s", it.first.c_str());
+			DrawFormatStringToHandle(50, WindowHeight - 550 + i * 60, menu_color[i], *resdata[FONT_MSGOTHIC] ,"%s", it.first.c_str());
 			++i;
 		}
 	}
@@ -136,7 +149,10 @@ bool Title::end(int msg)
 	if (level_mng->fadeend())
 	{
 		for (auto& it : resdata)
-			it->Delete();
+		{
+			if (it)
+				it->Delete();
+		}
 		this->loading = false;
 		end_flag = false;
 		return true;

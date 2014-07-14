@@ -24,6 +24,7 @@ enum RESID
 	GR_BLOCK,
 	GR_WALL,
 	GR_FIELD,
+	GR_BACKGROUND,
 	FONT_MSG,
 
 };
@@ -45,7 +46,7 @@ bool GameMain::init(int )
 		auto font_loader = get_loader<font_controler>();
 		auto mng = res::Resource_mng::get_Instance();
 
-		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_8X8);
+		font_loader->set_fontinfo("MS Gothic", 40, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 
 		resdata[BGM] = mng->Regist("data/Play01.ogg", snd_loader);
 		resdata[PANEL_CHANGE] = mng->Regist("data/panel_change01.ogg", snd_loader);
@@ -54,6 +55,7 @@ bool GameMain::init(int )
 		resdata[GR_WALL] = mng->Regist("data/wall.png", gr_loader);
 		resdata[GR_BLOCK] = mng->Regist("data/wall.png", gr_loader);
 		resdata[GR_FIELD] = mng->Regist("data/field.png", gr_loader);
+		resdata[GR_BACKGROUND] = mng->Regist("data/background.png", gr_loader);
 
 		draw_ = std::make_shared<draw_game>();
 		field_ = std::make_shared<field>(7, 7);
@@ -63,24 +65,24 @@ bool GameMain::init(int )
 
 		for (auto& it : resdata)
 		{
-			if (it && it->is_Enable())
+			if (it)
 				it->Load();
 		}
 		loading = true;
 		return false;
 	}
-	else if (resdata[BGM]->is_Loaded() ||
-			resdata[PANEL_CHANGE]->is_Loaded() ||
-			resdata[PANEL_DESTROY]->is_Loaded() ||
-			resdata[FONT_MSG]->is_Loaded())
+	else
 	{
+		//‚·‚×‚Ä‚ÌƒŠƒ\[ƒX“Ç‚Ýž‚Ý
+		for (auto& it : resdata)
+		{
+			if (!it) continue;
+			if (!it->is_Loaded())
+				return false;
+		}
 		loading = false;
 		level_mng->set_fadein(30);
 		return true;
-	}
-	else
-	{
-		return false;
 	}
 }
 
@@ -156,7 +158,7 @@ int GameMain::execute(int msg)
 			}
 		}
 	}
-
+	DrawGraph(0, 0, *resdata[GR_BACKGROUND], true);
 	//•`‰æˆ—
 	draw_->draw_Field(50, 50, *field_);
 #ifdef _DEBUG
